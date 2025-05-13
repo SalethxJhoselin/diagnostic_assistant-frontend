@@ -21,7 +21,7 @@ export default function App() {
     formData.append("image", image);
 
     try {
-      const response = await fetch("http://192.168.100.12:5000/predict", {
+      const response = await fetch("https://model-flask.onrender.com/predict", {
         method: "POST",
         body: formData,
       });
