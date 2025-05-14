@@ -1,4 +1,6 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { Button } from "./ui/button";
+import SyncUserWithBackend from "@/hooks/SyncUserWithBackend";
 
 export default function Header() {
     return (
@@ -7,12 +9,13 @@ export default function Header() {
             <h1>Header</h1>
             <section>
                 <SignedOut>
-                    <div className="bg-primary p-1 px-4 font-semibold rounded-xl">
+                    <Button>
                         <SignInButton />
-                    </div>
+                    </Button>
                 </SignedOut>
                 <SignedIn>
                     <UserButton />
+                    <SyncUserWithBackend/>
                 </SignedIn>
             </section>
         </header>

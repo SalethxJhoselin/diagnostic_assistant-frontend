@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import { Toaster } from "sonner";
 
 export default function Layout() {
     return (
@@ -9,6 +10,7 @@ export default function Layout() {
             <div className="flex flex-1">
                 <Sidebar />
                 <main className="flex-1 bg-gray-100 p-4">
+                    <Toaster/>
                     <Outlet />
                 </main>
             </div>

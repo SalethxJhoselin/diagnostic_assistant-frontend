@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "./components/ui/button";
-import { Toaster, toast } from 'sonner';
+import { toast } from 'sonner';
 
 export default function App() {
   const [image, setImage] = useState<File | null>(null);
@@ -21,7 +21,7 @@ export default function App() {
     formData.append("image", image);
 
     try {
-      const response = await fetch("https://model-flask.onrender.com/predict", {
+      const response = await fetch("http://127.0.0.1:5000/predict", {
         method: "POST",
         body: formData,
       });
@@ -41,7 +41,6 @@ export default function App() {
   return (
     <>
       <div className="p-4 space-y-4">
-        <Toaster />
         <input 
           type="file" 
           accept="image/*" 
