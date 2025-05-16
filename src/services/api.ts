@@ -1,0 +1,1 @@
+export const apilocal = 'http://localhost:3000'
