@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "./components/ui/button";
 import { toast } from 'sonner';
+import { fetchModel } from "./services/model";
 
 export default function App() {
   const [image, setImage] = useState<File | null>(null);
@@ -16,21 +17,11 @@ export default function App() {
       toast.error("Por favor selecciona una imagen.");
       return;
     }
-
     const formData = new FormData();
     formData.append("image", image);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/predict", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al predecir.");
-      }
-
-      const result = await response.json();
+      const result = await fetchModel(formData)
       toast.success(`Clase: ${result.class}, Confianza: ${result.confidence}`);
     } catch (error) {
       toast.error("Error al conectar con el servidor.");
