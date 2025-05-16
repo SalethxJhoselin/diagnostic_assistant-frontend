@@ -1,27 +1,14 @@
+import { fetchSignIn, type SignInDto } from "@/services/auth";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-interface SignInDto {
-  email: string;
-  password: string | null;
-  auth_provider: string;
-}
-
 export default function SyncUserWithBackend() {
   const { user } = useUser();
 
-  const fetchSignIn = async (signInDto: SignInDto) => {
+  const handleFecthSignIn = async (signInDto: SignInDto) => {
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signInDto),
-      });
-
-      const result = await response.json()
+      const result = await fetchSignIn(signInDto)
       console.log(result);
       toast("user guardado");
       localStorage.setItem("user_synced", "true");
@@ -34,8 +21,6 @@ export default function SyncUserWithBackend() {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
-
       const email = user.primaryEmailAddress?.emailAddress;
       const name = user.fullName || `${user.firstName} ${user.lastName}`;
       console.log(email);
@@ -49,7 +34,7 @@ export default function SyncUserWithBackend() {
             password: '',
             auth_provider: 'google'
         }
-        fetchSignIn(signInDto);
+        handleFecthSignIn(signInDto);
       }
     }
   }, [user]);
