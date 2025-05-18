@@ -16,12 +16,10 @@ export default function Header() {
                     <UserButton
                         appearance={{
                             elements: {
-                                userButtonAvatarBox: "w-14 h-14",     // cambia tamaño del contenedor
-                                avatarImage: "w-14 h-14",             // cambia tamaño de la imagen
+                                userButtonAvatarBox: "w-14 h-14",
                             },
                         }}
                     />
-
                     <SyncUserWithBackend />
                 </SignedIn>
             </section>
