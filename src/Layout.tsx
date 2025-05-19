@@ -6,7 +6,6 @@ import { Toaster } from "sonner";
 export default function Layout() {
     const location = useLocation()
     const hideSidebar = location.pathname.startsWith("/dashboard/organizations");
-    console.log(hideSidebar);
 
     return (
         <div className="flex flex-col w-full h-screen">

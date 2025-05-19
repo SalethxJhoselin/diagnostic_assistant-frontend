@@ -1,31 +1,42 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { Button } from "./ui/button";
 import SyncUserWithBackend from "@/hooks/SyncUserWithBackend";
-import { useThemeToggle } from "@/hooks/useThemeToggle"; 
+import { ToggleThemeButton } from "./ToggleThemeButton";
+import { IconLogo } from "@/assets/icons";
+import { useOrganization } from "@/hooks/organizationContex";
+import { useLocation } from "react-router-dom";
+import { OrganizationSelector } from "./OrganizationSelector";
 
 export default function Header() {
-    const { isDark, toggleTheme } = useThemeToggle();
+    const { organization } = useOrganization()
+    const location = useLocation()
+    const hideOrganization = location.pathname.startsWith("/dashboard/organizations");
 
     return (
-        <header className="w-full h-14 flex items-center justify-between px-2 border-b">
-            <h1>Header</h1>
-            <section className="flex items-center gap-4">
-                {/* Botón para cambiar tema */}
-                <button onClick={toggleTheme} className="p-2 rounded hover:bg-accent">
-                    {isDark ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icon-tabler-sun">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
-                            <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7" />
-                        </svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icon-tabler-moon">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
-                        </svg>
-                    )}
-                </button>
+        <header className="w-full lg:h-14 h-11 flex items-center justify-between px-2 border-b">
+            <section className="flex gap-x-3 items-center">
+                <IconLogo />
+                <div className="flex items-center gap-x-1">
+                    <span className="text-zinc-500">/</span>
+                    {hideOrganization ?
+                        <h1 className="font-semibold text-sm animate-fade-in-left">Organizations</h1>
+                        :
+                        <div className="flex items-center justify-center gap-2 relative">
+                            <h1 className="font-semibold text-sm animate-fade-in-left">{organization?.name}</h1>
+                            <div className="text-zinc-400 font-semibold text-[12px]
+                                border rounded-2xl px-2.5 pb-1 absolute top-0 -right-14 cursor-pointer">
+                                {organization?.subscriptions[0].plan.name}
+                            </div>
+                            <div className="absolute -right-22">
+                                <OrganizationSelector />
+                            </div>
+                        </div>
 
+                    }
+                </div>
+            </section>
+            <section className="flex items-center gap-4">
+                <ToggleThemeButton />
                 <SignedOut>
                     <Button>
                         <SignInButton />
