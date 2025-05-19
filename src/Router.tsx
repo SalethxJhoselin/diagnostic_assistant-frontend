@@ -1,7 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
-import ModelIA from "./pages/model";
 import Organizations from "./pages/Organization";
+import ModelIA from "./pages/Model";
+import HomeOrganization from "./pages/HomeOrganization";
 
 export function Router() {
     return (
@@ -9,6 +10,7 @@ export function Router() {
             <Route element={<Layout />}>
                 <Route path="/dashboard/model" element = {<ModelIA/>} />
                 <Route path="/dashboard/organizations" element = {<Organizations/>} />
+                <Route path="/dashboard/org/:id" element = {<HomeOrganization/>} />
             </Route>
         </Routes>
     )
