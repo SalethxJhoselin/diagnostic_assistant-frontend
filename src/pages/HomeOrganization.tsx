@@ -1,10 +1,10 @@
-import { useOrganizations } from "@/hooks/organizationContex"
+import { useOrganization } from "@/hooks/organizationContex";
 import { useParams } from "react-router-dom"
 
 export default function HomeOrganization(){
     const {id} = useParams()
-    const  organizations  = useOrganizations()
-    console.log(organizations);
+    const  {organization}  = useOrganization()
+    console.log(organization);
     console.log(id);
     
     return(

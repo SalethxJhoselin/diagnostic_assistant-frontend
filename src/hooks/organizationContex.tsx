@@ -1,30 +1,26 @@
 import type { Organization } from "@/lib/interfaces";
-import { fetchOrganizationsByUser } from "@/services/organizations";
-import { useUser } from "@clerk/clerk-react";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
-export const OrganizationContext = createContext<Organization[] | undefined>(undefined);
+type OrganizationContextType = {
+    organization: Organization | undefined;
+    setOrganization: React.Dispatch<React.SetStateAction<Organization | undefined>>;
+};
 
-export const useOrganizations = () => useContext(OrganizationContext);
+export const OrganizationContext = createContext<OrganizationContextType | undefined>(undefined);
 
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
-    const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
-    const { user } = useUser();
-
-    useEffect(() => {
-        const fetchOrgs = async () => {
-            if (user) {
-                const orgs = await fetchOrganizationsByUser(user.primaryEmailAddress?.emailAddress || '', true);
-                setOrganizations(orgs);
-            }
-        };
-        fetchOrgs();
-    }, [user]);
+    const [organization, setOrganization] = useState<Organization | undefined>(undefined);
 
     return (
-        <OrganizationContext.Provider value={organizations}>
+        <OrganizationContext.Provider value={{ organization, setOrganization }}>
             {children}
         </OrganizationContext.Provider>
     );
 }
 
+export const useOrganization = ():OrganizationContextType =>{
+    const contex = useContext(OrganizationContext)
+    if(!contex)
+        throw new Error('')
+    return contex
+}

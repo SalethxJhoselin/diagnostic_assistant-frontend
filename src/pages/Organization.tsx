@@ -1,10 +1,37 @@
 import { IconBoxes, IconSearch } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
-import { useOrganizations } from "@/hooks/organizationContex";
-import { Link } from "react-router-dom";
+import { useOrganization } from "@/hooks/organizationContex";
+import type { Organization } from "@/lib/interfaces";
+import { fetchOrganizationsByUser } from "@/services/organizations";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Organizations() {
-    const organizations = useOrganizations() || [];
+    const { setOrganization } = useOrganization()
+    const [organizations, setOrganizations] = useState<Organization[]>()
+    const navigate = useNavigate()
+    const { user } = useUser()
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (user) {
+                    const result = await fetchOrganizationsByUser(user.primaryEmailAddress?.emailAddress || '', true);
+                    setOrganizations(result);
+                }
+            } catch (error) {
+                toast("error al recuperar tus organizaciones");
+            }
+        };
+        fetchData();
+    }, [user]);
+
+    const handleClickOrganization = (organization: Organization) => {
+        setOrganization(organization)
+        navigate(`/dashboard/org/${organization.id}`)
+    }
+
     return (
         <>
             <div className="flex flex-col lg:mx-56 sm:mx-20 mx-6 h-auto">
@@ -29,20 +56,21 @@ export default function Organizations() {
                 </section>
                 <div className="flex gap-x-5 mt-10 ">
                     {
-                        organizations.map((organization) =>(
-                            <Link 
-                                to={`/dashboard/org/${organization.name.replace(/\s+/g, '-').toLowerCase()}`}
-                                key={organization.id} 
-                                className="flex w-full sm:w-[450px] border rounded-2xl px-5 py-4 gap-4
-                                    items-center bg-secondary">
-                                <div className="bg-black rounded-4xl p-1.5">
-                                    <IconBoxes/>
+                        organizations && organizations.map((organization) => (
+                            <article
+                                onClick={() => handleClickOrganization(organization)}
+                                key={organization.id}
+                                className="flex w-full lg:w-[450px] border rounded-2xl px-5 py-4 gap-4
+                                    items-center bg-secondary cursor-pointer hover:bg-secondary/80 
+                                    transition-all ">
+                                <div className="bg-black text-white  rounded-4xl p-1.5">
+                                    <IconBoxes />
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-semibold">{organization.name}</h2>
                                     <h3 className="text-sm">{organization.subscriptions[0].plan.name}</h3>
                                 </div>
-                            </Link>
+                            </article>
                         ))
                     }
                 </div>
