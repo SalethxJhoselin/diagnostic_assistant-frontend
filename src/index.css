@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@midudev/tailwind-animations";
+
 
 @custom-variant dark (&:is(.dark *));
 
