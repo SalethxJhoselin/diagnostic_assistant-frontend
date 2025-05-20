@@ -1,43 +1,124 @@
-import { IconHome, IconUsers } from "@/assets/icons";
+import { IconAdmin, IconDate, IconHome, IconHospital, IconIA, IconUsers } from "@/assets/icons";
 import { useOrganization } from "@/hooks/organizationContex";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
-    const [select, setSelect] = useState("Home Organization");
-    const {organization} = useOrganization()
-    const labels = [
-        {
-            icon: <IconHome />,
-            title: "Home Organization",
-            to: "",
-        },
-        {
-            icon: <IconUsers />,
-            title: "Team",
-            to: "team",
-        },
-    ];
+  const { organization } = useOrganization();
+  const location = useLocation();
+  const [selected, setSelected] = useState("");
+  const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
 
-    return (
-        <aside className="w-[280px] h-full border-r p-4">
-            {labels.map((label) => {
-                const isSelected = select === label.title;
-                return (
-                    <Link
-                        key={label.title}
-                        to={`/dashboard/org/${organization?.id}/${label.to}`}
-                        onClick={() => setSelect(label.title)}
-                        className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors
-                            ${isSelected ? "bg-secondary  font-bold" : `dark:text-zinc-300 text-zinc-700 hover:bg-secondary
-                             dark:hover:text-white hover:text-black hover:font-bold font-semibold`}
-                        `}
-                    >
-                        {label.icon}
-                        <span>{label.title}</span>
-                    </Link>
-                );
-            })}
-        </aside>
-    );
+  const id = organization?.id;
+
+  const labels = [
+    {
+      name: "Home",
+      path: `/dashboard/org/${id}`,
+      icon: <IconHome />,
+    },
+    {
+      name: "Team",
+      path: `/dashboard/org/${id}/team`,
+      icon: <IconUsers />,
+    },
+    {
+      name: "Clinic",
+      icon: <IconHospital />,
+      children: [
+        { name: "Patients", path: `/dashboard/org/${id}/clinic/patients` },
+        { name: "Consultations", path: `/dashboard/org/${id}/clinic/consultations` },
+        { name: "Diagnoses", path: `/dashboard/org/${id}/clinic/diagnoses` },
+        { name: "Treatments", path: `/dashboard/org/${id}/clinic/treatments` },
+      ],
+    },
+    {
+      name: "Appointments",
+      icon: <IconDate />,
+      children: [
+        { name: "Medical Appointments", path: `/dashboard/org/${id}/appointments` },
+        { name: "Schedules", path: `/dashboard/org/${id}/attention-hours` },
+      ],
+    },
+    {
+      name: "IA Model",
+      path: `/dashboard/org/${id}/ia-model`,
+      icon: <IconIA />,
+    },
+    {
+      name: "Admin",
+      path: `/dashboard/org/${id}/admin`,
+      icon: <IconAdmin />,
+    },
+  ];
+
+  const toggleSection = (sectionName: string) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [sectionName]: !prev[sectionName],
+    }));
+  };
+
+  const isActive = (path: string) => location.pathname === path;
+
+  return (
+    <aside className="w-[280px] h-full border-r p-4 overflow-y-auto">
+      {labels.map((label) => {
+        const isSelected = selected === label.name;
+
+        if (label.children) {
+          const isOpen = openSections[label.name] || false;
+
+          return (
+            <div key={label.name} className="my-2">
+              <button
+                onClick={() => toggleSection(label.name)}
+                className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg transition-colors
+                  ${isSelected || isOpen ? "bg-secondary font-bold" : "hover:bg-secondary font-semibold text-muted-foreground"}`}
+              >
+                {label.icon}
+                <span>{label.name}</span>
+                <span className="ml-auto">{isOpen ? "▾" : "▸"}</span>
+              </button>
+
+              {isOpen && (
+                <div className="ml-6 mt-1 space-y-1">
+                  {label.children.map((child) => {
+                    const active = isActive(child.path);
+                    return (
+                      <Link
+                        key={child.name}
+                        to={child.path}
+                        onClick={() => setSelected(label.name)}
+                        className={`block px-3 py-1.5 rounded-md text-sm transition-colors ${
+                          active
+                            ? "bg-muted font-bold"
+                            : "text-muted-foreground hover:bg-secondary hover:font-semibold"
+                        }`}
+                      >
+                        {child.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <Link
+            key={label.name}
+            to={label.path}
+            onClick={() => setSelected(label.name)}
+            className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors
+              ${isActive(label.path || "") ? "bg-secondary font-bold" : "text-muted-foreground hover:bg-secondary hover:font-semibold"}`}
+          >
+            {label.icon}
+            <span>{label.name}</span>
+          </Link>
+        );
+      })}
+    </aside>
+  );
 }
