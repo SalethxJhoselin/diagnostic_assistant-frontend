@@ -17,13 +17,13 @@ export default function Header() {
             <section className="flex gap-x-3 items-center">
                 <IconLogo />
                 <div className="flex items-center gap-x-1">
-                    <span className="text-zinc-500">/</span>
+                    <span className="">/</span>
                     {hideOrganization ?
                         <h1 className="font-semibold text-sm animate-fade-in-left">Organizations</h1>
                         :
                         <div className="flex items-center justify-center gap-2 relative">
                             <h1 className="font-semibold text-sm animate-fade-in-left">{organization?.name}</h1>
-                            <div className="text-zinc-400 font-semibold text-[12px]
+                            <div className=" font-semibold text-[12px] border-zinc-400
                                 border rounded-2xl px-2.5 pb-1 absolute top-0 -right-14 cursor-pointer">
                                 {organization?.subscriptions[0].plan.name}
                             </div>

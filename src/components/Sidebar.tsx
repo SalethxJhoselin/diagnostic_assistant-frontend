@@ -74,7 +74,7 @@ export default function Sidebar() {
               <button
                 onClick={() => toggleSection(label.name)}
                 className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg transition-colors
-                  ${isSelected || isOpen ? "bg-secondary font-bold" : "hover:bg-secondary font-semibold text-muted-foreground"}`}
+                  ${isSelected || isOpen ? "bg-secondary font-bold" : "hover:bg-secondary hover:font-bold font-semibold"}`}
               >
                 {label.icon}
                 <span>{label.name}</span>
@@ -93,7 +93,7 @@ export default function Sidebar() {
                         className={`block px-3 py-1.5 rounded-md text-sm transition-colors ${
                           active
                             ? "bg-muted font-bold"
-                            : "text-muted-foreground hover:bg-secondary hover:font-semibold"
+                            : "font-semibold hover:bg-secondary hover:font-bold"
                         }`}
                       >
                         {child.name}
@@ -111,8 +111,8 @@ export default function Sidebar() {
             key={label.name}
             to={label.path}
             onClick={() => setSelected(label.name)}
-            className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors
-              ${isActive(label.path || "") ? "bg-secondary font-bold" : "text-muted-foreground hover:bg-secondary hover:font-semibold"}`}
+            className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors 
+              ${isActive(label.path || "") ? "bg-secondary font-bold" : "font-semibold hover:bg-secondary hover:font-bold"}`}
           >
             {label.icon}
             <span>{label.name}</span>

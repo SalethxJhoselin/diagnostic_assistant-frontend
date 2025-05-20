@@ -12,7 +12,6 @@
 
   color-scheme: light dark;
   background-color: #dde4e8;
-  color: #333;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,10 +19,11 @@
   -moz-osx-font-smoothing: grayscale;
 
   --radius: 0.5rem;
+  --text-base: #3f3f46;
 
   /* Convertidos de OKLCH a HEX */
   --background: #ffffff;
-  --foreground: #222230;
+  --foreground: var(--text-base);
 
   --card: #ffffff;
   --card-foreground: #222230;
@@ -104,9 +104,9 @@ body {
 
 .dark {
   color-scheme: dark;
-
+  --text-base: #d4d4d8; 
   --background: #24262d;
-  --foreground: #fafafa;
+  --foreground: var(--text-base); 
 
   --card: #2a2c34;
   --card-foreground: #fafafa;
