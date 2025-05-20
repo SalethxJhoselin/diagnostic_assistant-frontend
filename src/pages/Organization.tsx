@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export default function Organizations() {
-    const { setOrganization } = useOrganization()
+    const { handleSetOrganization } = useOrganization()
     const [organizations, setOrganizations] = useState<Organization[]>()
     const navigate = useNavigate()
     const { user } = useUser()
@@ -28,7 +28,7 @@ export default function Organizations() {
     }, [user]);
 
     const handleClickOrganization = (organization: Organization) => {
-        setOrganization(organization)
+        handleSetOrganization(organization)
         navigate(`/dashboard/org/${organization.id}`)
     }
 
