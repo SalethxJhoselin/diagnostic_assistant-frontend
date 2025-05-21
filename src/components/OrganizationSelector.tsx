@@ -7,7 +7,7 @@ export function OrganizationSelector() {
   const [openMenu, setOpenMenu] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="">
       <button
         onClick={() => setOpenMenu(!openMenu)}
         className="flex flex-col items-center gap-1 px-2 py-1 rounded-md hover:bg-secondary 
