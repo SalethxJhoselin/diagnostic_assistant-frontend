@@ -62,7 +62,7 @@ export default function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <aside className="w-[280px] h-full border-r p-4 overflow-y-auto">
+    <aside className="w-[260px] h-full border-r p-4 overflow-y-auto text-[12px]">
       {labels.map((label) => {
         const isSelected = selected === label.name;
 
@@ -90,7 +90,7 @@ export default function Sidebar() {
                         key={child.name}
                         to={child.path}
                         onClick={() => setSelected(label.name)}
-                        className={`block px-3 py-1.5 rounded-md text-sm transition-colors ${
+                        className={`block px-3 py-1.5 rounded-md text-[10px] transition-colors ${
                           active
                             ? "bg-muted font-bold"
                             : "font-semibold hover:bg-secondary hover:font-bold"

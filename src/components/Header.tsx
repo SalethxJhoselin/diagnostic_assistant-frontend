@@ -9,6 +9,7 @@ import { OrganizationSelector } from "./OrganizationSelector";
 
 export default function Header() {
     const { organization } = useOrganization()
+
     const location = useLocation()
     const hideOrganization = location.pathname.startsWith("/dashboard/organizations");
 
@@ -21,17 +22,14 @@ export default function Header() {
                     {hideOrganization ?
                         <h1 className="font-semibold text-sm animate-fade-in-left">Organizations</h1>
                         :
-                        <div className="flex items-center justify-center gap-2 relative">
+                        <div className="flex items-center justify-center gap-2 ">
                             <h1 className="font-semibold text-sm animate-fade-in-left">{organization?.name}</h1>
-                            <div className=" font-semibold text-[12px] border-zinc-400
-                                border rounded-2xl px-2.5 pb-1 absolute top-0 -right-14 cursor-pointer">
-                                {organization?.subscriptions[0].plan.name}
+                            <div className=" font-semibold text-[12px] border-zinc-500
+                                border rounded-2xl px-2.5 py-1 pb-1cursor-pointer">
+                                {organization?.subscriptions[0].plan.name || ''}
                             </div>
-                            <div className="absolute -right-22">
-                                <OrganizationSelector />
-                            </div>
+                            <OrganizationSelector />
                         </div>
-
                     }
                 </div>
             </section>
