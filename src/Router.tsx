@@ -16,8 +16,8 @@ import Schedules from "./pages/appointments/Schedules";
 export function Router() {
     return (
         <Routes>
-            <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
+            <Route element={<Layout />}>
                 <Route path="/dashboard/organizations" element={<Organizations />} />
 
                 <Route path="/dashboard/org/:id" element={<HomeOrganization />} />
