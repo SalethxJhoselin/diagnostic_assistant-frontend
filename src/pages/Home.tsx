@@ -1,40 +1,50 @@
 import { SignInButton, useAuth } from "@clerk/clerk-react";
-import { Button } from "@/components/ui/button";
 import { IconLogo } from "@/assets/icons";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
     const { isSignedIn } = useAuth();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (isSignedIn) {
-            navigate('/dashboard/organizations');
-        }
-    }, [isSignedIn, navigate]);
+    const handleStart = () => {
+        navigate("/dashboard/organizations");
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
             <div className="container mx-auto px-4 py-8">
-                <div className="flex flex-col items-center justify-center min-h-[80vh] text-center space-y-8">
+                <main className="flex flex-col items-center justify-center min-h-[80vh] text-center space-y-8">
                     <div className="space-y-4">
                         <IconLogo />
                         <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                             Diagnostic Assistant
                         </h1>
                         <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                            Tu asistente inteligente para diagnósticos médicos. Gestiona pacientes, 
+                            Tu asistente inteligente para diagnósticos médicos. Gestiona pacientes,
                             consultas y tratamientos de manera eficiente.
                         </p>
                     </div>
 
-                    <div className="space-y-4">
-                        <SignInButton mode="modal">
-                            <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
-                                Iniciar Sesión
-                            </Button>
-                        </SignInButton>
+                    <div className="space-y-4 flex flex-col items-center">
+                        {isSignedIn ? (
+                            <div
+                                onClick={handleStart}
+                                className="w-48 h-9 bg-primary text-white rounded-md
+                                    flex items-center justify-center border cursor-pointer
+                                    hover:bg-primary/95 transition-all"
+                            >
+                                <p>Start your organization</p>
+                            </div>
+                        ) : (
+                            <SignInButton mode="modal">
+                                <div className="w-48 h-9 bg-primary text-white rounded-md
+                                    flex items-center justify-center border cursor-pointer
+                                    hover:bg-primary/95 transition-all">
+                                    <p>Start your organization</p>
+                                </div>
+                            </SignInButton>
+                        )}
+
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             Accede a todas las funcionalidades de la plataforma
                         </p>
@@ -60,7 +70,7 @@ export default function Home() {
                             </p>
                         </div>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     );

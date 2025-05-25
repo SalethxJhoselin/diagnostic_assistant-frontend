@@ -4,7 +4,7 @@ import SyncUserWithBackend from "@/hooks/SyncUserWithBackend";
 import { ToggleThemeButton } from "./ToggleThemeButton";
 import { IconLogo } from "@/assets/icons";
 import { useOrganization } from "@/hooks/organizationContex";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { OrganizationSelector } from "./OrganizationSelector";
 
 export default function Header() {
@@ -16,7 +16,9 @@ export default function Header() {
     return (
         <header className="w-full lg:h-14 h-11 flex items-center justify-between px-2 border-b">
             <section className="flex gap-x-3 items-center">
-                <IconLogo />
+                <Link to={'/'}>
+                    <IconLogo />
+                </Link>
                 <div className="flex items-center gap-x-1">
                     <span className="">/</span>
                     {hideOrganization ?
