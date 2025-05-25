@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @plugin "@midudev/tailwind-animations";
 
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -47,7 +46,7 @@
 
   --border: #dadada;
   --input: #ebebf0;
-  --input-soft: #ebebf08d; 
+  --input-soft: #ebebf08d;
   --ring: #655dff;
 
   --chart-1: #f1a12b;
@@ -58,7 +57,6 @@
 
   --sidebar: #fafafa;
 }
-
 
 #root {
   margin: 0;
@@ -104,9 +102,9 @@ body {
 
 .dark {
   color-scheme: dark;
-  --text-base: #d4d4d8; 
+  --text-base: #d4d4d8;
   --background: #24262d;
-  --foreground: var(--text-base); 
+  --foreground: var(--text-base);
 
   --card: #2a2c34;
   --card-foreground: #fafafa;
@@ -140,13 +138,61 @@ body {
   --chart-5: #f96f6f;
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  position: relative;
+  animation: rotate 1s linear infinite;
+}
+.loader::before,
+.loader::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+  border: 5px solid var(--secondary);
+  animation: prixClipFix 2s linear infinite;
+}
+.loader::after {
+  border-color: var(--primary);
+  animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+  inset: 6px;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
+  }
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
+  }
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
+  }
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
   }
 }
