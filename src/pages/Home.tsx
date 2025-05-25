@@ -1,6 +1,7 @@
 import { SignInButton, useAuth } from "@clerk/clerk-react";
 import { IconLogo } from "@/assets/icons";
 import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/NavBarHome";
 
 export default function Home() {
     const { isSignedIn } = useAuth();
@@ -12,11 +13,12 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+             <Navbar />
             <div className="container mx-auto px-4 py-8">
                 <main className="flex flex-col items-center justify-center min-h-[80vh] text-center space-y-8">
                     <div className="space-y-4">
                         <IconLogo />
-                        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                             Diagnostic Assistant
                         </h1>
                         <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -29,17 +31,17 @@ export default function Home() {
                         {isSignedIn ? (
                             <div
                                 onClick={handleStart}
-                                className="w-48 h-9 bg-primary text-white rounded-md
+                                className="w-48 h-9 bg-blue-600 text-white rounded-md
                                     flex items-center justify-center border cursor-pointer
-                                    hover:bg-primary/95 transition-all"
+                                    hover:bg-blue-700 transition-all"
                             >
                                 <p>Start your organization</p>
                             </div>
                         ) : (
                             <SignInButton mode="modal">
-                                <div className="w-48 h-9 bg-primary text-white rounded-md
+                                <div className="w-48 h-9 bg-blue-600 text-white rounded-md
                                     flex items-center justify-center border cursor-pointer
-                                    hover:bg-primary/95 transition-all">
+                                    hover:bg-blue-700 transition-all">
                                     <p>Start your organization</p>
                                 </div>
                             </SignInButton>
@@ -50,7 +52,7 @@ export default function Home() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12" id="servicios">
                         <div className="p-6 bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-200/20 dark:border-gray-700/50">
                             <h3 className="text-xl font-semibold mb-2">Gestión de Pacientes</h3>
                             <p className="text-gray-600 dark:text-gray-400">
