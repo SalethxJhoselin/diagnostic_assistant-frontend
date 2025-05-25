@@ -86,64 +86,69 @@ export default function Organizations() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
-            <div className="container mx-auto px-4 py-8">
-                <section className="mb-12">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            Tus Organizaciones
-                        </h1>
-                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                            <Button
-                                className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-                                onClick={handleOpenDialog}
-                            >
-                                Nueva Organización
-                            </Button>
+        <>
+            <div className="flex flex-col lg:mx-46 sm:mx-20 mx-6 h-auto">
+                <section className="flex flex-col sm:mt-10 mt-4 sm:gap-y-8 gap-y-6">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-primary 
+                        to-primary/60 bg-clip-text text-transparent py-2">
+                        Tus Organizaciones
+                    </h1>
+                    <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4">
+                        <Button
+                            className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                            onClick={handleOpenDialog}
+                        >
+                            Nueva Organización
+                        </Button>
 
-                            <div className="relative group">
-                                <input
-                                    className="w-full sm:w-80 pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                                    type="search"
-                                    placeholder="Buscar por nombre o plan..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                                {searchQuery && (
-                                    <button
-                                        onClick={() => setSearchQuery("")}
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200"
-                                    >
-                                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                )}
+                        <div className="flex items-center relative group">
+                            <div className="absolute pl-4 text-zinc-600 dark:text-zinc-200">
+                                <IconSearch />
                             </div>
+                            <input
+                                className="w-full sm:w-80 border rounded-lg pl-12 py-0.5 bg-[var(--input-soft)]"
+                                type="search"
+                                placeholder="Buscar por nombre o plan..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery("")}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200"
+                                >
+                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </section>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
                     {filteredOrganizations?.map((organization) => (
                         <article
                             onClick={() => handleClickOrganization(organization)}
                             key={organization.id}
-                            className="group relative bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-200/20 dark:border-gray-700/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
+                            className="flex w-full  md:w-[370px] px-5 py-4 gap-4 items-center group 
+                                  bg-secondary backdrop-blur-sm rounded-xl
+                                    border border-gray-400/20 dark:border-gray-700/50 hover:border-primary/50
+                                    transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
                         >
-                            <div className="flex items-start gap-4">
-                                <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-lg group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors duration-300">
-                                    <IconBoxes />
-                                </div>
-
-                                <div className="flex-1">
-                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">{organization.name}</h2>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
-                                    </p>
-                                </div>
+                            <div className="bg-primary/10 dark:bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/20
+                                 dark:group-hover:bg-primary/30 transition-colors duration-300">
+                                <IconBoxes />
                             </div>
-                            <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-gray-700/50 group-hover:ring-primary/20 transition-all duration-300" />
+
+                            <div className="">
+                                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                    {organization.name}
+                                </h2>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
+                                </p>
+                            </div>
                         </article>
                     ))}
                     {filteredOrganizations?.length === 0 && (
@@ -226,6 +231,6 @@ export default function Organizations() {
                     </div>
                 )}
             </div>
-        </div>
+        </>
     );
 }
