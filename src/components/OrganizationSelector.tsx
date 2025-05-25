@@ -18,7 +18,7 @@ export function OrganizationSelector() {
       </button>
 
       {openMenu && (
-        <menu className="absolute top-full mt-2 rounded-md p-2
+        <menu className="absolute rounded-md p-2
           w-64 dark:text-zinc-300 text-zinc-600 dark:bg-secondary border 
           text-[12px] px-1 flex flex-col bg-white">
           <div className="border-b pb-2">
