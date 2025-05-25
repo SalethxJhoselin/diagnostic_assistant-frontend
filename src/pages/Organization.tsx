@@ -15,10 +15,12 @@ import { toast } from "sonner";
 export default function Organizations() {
     const { handleSetOrganization } = useOrganization();
     const [organizations, setOrganizations] = useState<Organization[]>();
+    const [filteredOrganizations, setFilteredOrganizations] = useState<Organization[]>();
     const [plans, setPlans] = useState<Plan[]>();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [selectedPlan, setSelectedPlan] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
     const navigate = useNavigate();
 
     const { user } = useUser();
@@ -31,16 +33,25 @@ export default function Organizations() {
                         user.primaryEmailAddress?.emailAddress || '',
                         true
                     );
-                    console.log(result);
-
                     setOrganizations(result);
+                    setFilteredOrganizations(result);
                 }
             } catch (error) {
-                toast("error al recuperar tus organizaciones");
+                toast("Error al recuperar tus organizaciones");
             }
         };
         fetchData();
     }, [user]);
+
+    useEffect(() => {
+        if (organizations) {
+            const filtered = organizations.filter(org =>
+                org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                org.subscriptions?.[0]?.plan?.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredOrganizations(filtered);
+        }
+    }, [searchQuery, organizations]);
 
     const handleClickOrganization = (organization: Organization) => {
         handleSetOrganization(organization);
@@ -53,7 +64,7 @@ export default function Organizations() {
             setPlans(result);
             setOpen(true);
         } catch (error) {
-            toast('error al traer los planes');
+            toast('Error al cargar los planes');
         }
     };
 
@@ -71,91 +82,117 @@ export default function Organizations() {
         const newOrgContex: Organization = await fetchOrgById(resultOrg.id)
         handleSetOrganization(newOrgContex)
         navigate(`/dashboard/org/${resultOrg.id}`)
-        toast(`Nombre: ${name || "No ingresado"} | Plan ID: ${selectedPlan || "No seleccionado"}`);
+        toast.success(`Organización creada exitosamente`);
     };
 
     return (
-        <>
-            <div className="flex flex-col lg:mx-46 sm:mx-20 mx-6 h-auto">
-                <section className="flex flex-col sm:mt-10 mt-4 sm:gap-y-10 gap-y-6">
-                    <h1 className="sm:text-3xl text-2xl font-medium">Your Organizations</h1>
-                    <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4 ">
-                        <Button className="text-white" onClick={handleOpenDialog}>
-                            New Organization
-                        </Button>
-                        <div className="flex items-center relative">
-                            <div className="absolute pl-4 text-zinc-600 dark:text-zinc-200">
-                                <IconSearch />
+        <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+            <div className="container mx-auto px-4 py-8">
+                <section className="mb-12">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            Tus Organizaciones
+                        </h1>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                            <Button
+                                className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                                onClick={handleOpenDialog}
+                            >
+                                Nueva Organización
+                            </Button>
+
+                            <div className="relative group">
+                                <input
+                                    className="w-full sm:w-80 pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                                    type="search"
+                                    placeholder="Buscar por nombre o plan..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery("")}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200"
+                                    >
+                                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
-                            <input
-                                className="w-full sm:w-80 border rounded-lg pl-12 py-0.5 bg-[var(--input-soft)]"
-                                type="search"
-                                placeholder="Search for an organization"
-                            />
                         </div>
                     </div>
                 </section>
 
-                <div className="flex gap-x-5 mt-10 ">
-                    {organizations?.map((organization) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredOrganizations?.map((organization) => (
                         <article
                             onClick={() => handleClickOrganization(organization)}
                             key={organization.id}
-                            className="flex w-full lg:w-[370px] border rounded-2xl px-5 py-4 gap-4 items-center
-                            bg-secondary cursor-pointer hover:bg-secondary/80 transition-all"
+                            className="group relative bg-white/5 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-200/20 dark:border-gray-700/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
                         >
-                            <div className="bg-black text-white rounded-4xl p-1.5">
-                                <IconBoxes />
+                            <div className="flex items-start gap-4">
+                                <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-lg group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors duration-300">
+                                    <IconBoxes />
+                                </div>
+
+                                <div className="flex-1">
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">{organization.name}</h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h2 className="text-lg font-semibold">{organization.name}</h2>
-                                <h3 className="text-sm">
-                                    {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
-                                </h3>
-                            </div>
+                            <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-gray-700/50 group-hover:ring-primary/20 transition-all duration-300" />
                         </article>
                     ))}
+                    {filteredOrganizations?.length === 0 && (
+                        <div className="col-span-full text-center py-12">
+                            <p className="text-gray-600 dark:text-gray-400 text-lg">
+                                No se encontraron organizaciones que coincidan con tu búsqueda
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {open && (
-                    <div
-                        className="fixed inset-0 z-50 bg-black/50 bg-opacity-50 flex items-center justify-center"
-                        onClick={() => setOpen(false)}
-                    >
+                    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
                         <div
-                            className="bg-secondary rounded-md shadow-xl w-full sm:w-xl mx-2"
+                            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="flex justify-between items-center border-b px-6 py-3">
-                                <h2 className="text-md font-semibold">Create a new organization</h2>
+                            <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Crear Nueva Organización</h2>
                             </div>
-                            <section className="flex flex-col px-6 py-3">
-                                <div className="flex justify-between pb-4">
-                                    <h2 className="font-semibold">Name</h2>
-                                    <div className="flex flex-col gap-2">
+                            <div className="p-6 space-y-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Nombre de la Organización
+                                        </label>
                                         <input
-                                            className="w-full sm:w-sm px-2 py-1 border rounded-md"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                             type="text"
-                                            placeholder="name to organization"
+                                            placeholder="Ingresa el nombre de tu organización"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                         />
-                                        <span className="text-sm">
-                                            What's the name of your company or team?
-                                        </span>
+                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            ¿Cuál es el nombre de tu empresa o equipo?
+                                        </p>
                                     </div>
-                                </div>
 
-                                <div className="flex justify-between pb-4">
-                                    <h2 className="font-semibold">Plan</h2>
-                                    <div className="flex flex-col gap-2">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Plan
+                                        </label>
                                         <Select value={selectedPlan} onValueChange={(val) => setSelectedPlan(val)}>
-                                            <SelectTrigger className="sm:w-[385px] w-full">
-                                                <SelectValue placeholder="Select a plan" />
+                                            <SelectTrigger className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                                                <SelectValue placeholder="Selecciona un plan" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectLabel>Plans</SelectLabel>
+                                                    <SelectLabel>Planes Disponibles</SelectLabel>
                                                     {plans?.map((plan) => (
                                                         <SelectItem key={plan.id} value={plan.id}>
                                                             {`${plan.name} - $${plan.price}`}
@@ -164,30 +201,31 @@ export default function Organizations() {
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                        <span className="text-sm">
-                                            The Plan applies to your new organization.
-                                        </span>
+                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            El plan se aplicará a tu nueva organización.
+                                        </p>
                                     </div>
                                 </div>
-                            </section>
-                            <div className="border-t px-6 py-3 flex items-center justify-between">
-                                <button
-                                    className="border border-zinc-500 rounded-md px-4 py-1 text-[14px] hover:bg-zinc-600 transition-all font-semibold"
+                            </div>
+                            <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-end gap-4">
+                                <Button
+                                    variant="outline"
+                                    className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                                     onClick={() => setOpen(false)}
                                 >
-                                    Cerrar
-                                </button>
+                                    Cancelar
+                                </Button>
                                 <Button
-                                    className="text-white cursor-pointer"
+                                    className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all duration-200"
                                     onClick={handleCreateOrganization}
                                 >
-                                    Create Organization
+                                    Crear Organización
                                 </Button>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 }
