@@ -87,7 +87,7 @@ export default function Organizations() {
 
     return (
         <>
-            <div className="flex flex-col lg:mx-46 sm:mx-20 mx-6 h-auto">
+            <div className="flex flex-col xl:mx-46 md:mx-25 sm:mx-20 mx-6">
                 <section className="flex flex-col sm:mt-10 mt-4 sm:gap-y-8 gap-y-6">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-primary 
                         to-primary/60 bg-clip-text text-transparent py-2">
@@ -126,28 +126,30 @@ export default function Organizations() {
                     </div>
                 </section>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+                <div className="flex flex-wrap gap-6 py-10">
                     {filteredOrganizations?.map((organization) => (
                         <article
                             onClick={() => handleClickOrganization(organization)}
                             key={organization.id}
-                            className="flex w-full  md:w-[370px] px-5 py-4 gap-4 items-center group 
+                            className="sm:w-[400px] xl:w-[420px] w-full px-5 py-4 gap-4 items-center group 
                                   bg-secondary backdrop-blur-sm rounded-xl
                                     border border-gray-400/20 dark:border-gray-700/50 hover:border-primary/50
                                     transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
                         >
-                            <div className="bg-primary/10 dark:bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/20
+                            <div className="flex items-start gap-3">
+                                <div className="bg-primary/10 dark:bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/20
                                  dark:group-hover:bg-primary/30 transition-colors duration-300">
-                                <IconBoxes />
-                            </div>
+                                    <IconBoxes />
+                                </div>
 
-                            <div className="">
-                                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                                    {organization.name}
-                                </h2>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
-                                </p>
+                                <div className="">
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                        {organization.name}
+                                    </h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
+                                    </p>
+                                </div>
                             </div>
                         </article>
                     ))}
