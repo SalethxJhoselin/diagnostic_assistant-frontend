@@ -2,13 +2,13 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-reac
 import { Button } from "./ui/button";
 import SyncUserWithBackend from "@/hooks/SyncUserWithBackend";
 import { ToggleThemeButton } from "./ToggleThemeButton";
-import { IconLogo } from "@/assets/icons";
+import { IconLogo, IconMenu } from "@/assets/icons";
 import { useOrganization } from "@/hooks/organizationContex";
 import { Link, useLocation } from "react-router-dom";
 import { OrganizationSelector } from "./OrganizationSelector";
 
 export default function Header() {
-    const { organization } = useOrganization()
+    const { organization,setOpenMenu,openMenu } = useOrganization()
 
     const location = useLocation()
     const hideOrganization = location.pathname.startsWith("/dashboard/organizations");
@@ -36,7 +36,7 @@ export default function Header() {
                     }
                 </div>
             </section>
-            <section className="flex items-center gap-4">
+            <section className="flex items-center sm:gap-1">
                 <ToggleThemeButton />
                 <SignedOut>
                     <Button>
@@ -44,16 +44,17 @@ export default function Header() {
                     </Button>
                 </SignedOut>
 
-                <SignedIn>
-                    <UserButton
-                        appearance={{
-                            elements: {
-                                userButtonAvatarBox: "w-14 h-14",
-                            },
-                        }}
-                    />
-                    <SyncUserWithBackend />
-                </SignedIn>
+                <div className="max-sm:hidden">
+                    <SignedIn>
+                        <UserButton/>
+                        <SyncUserWithBackend />
+                    </SignedIn>
+                </div>
+                <button className="bg-secondary p-1 rounded-lg hover:rotate-3 transition-all
+                    sm:hidden"
+                    onClick={()=> setOpenMenu(!openMenu)}>
+                    <IconMenu/>
+                </button>
             </section>
         </header>
     );
