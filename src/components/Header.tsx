@@ -14,7 +14,8 @@ export default function Header() {
     const hideOrganization = location.pathname.startsWith("/dashboard/organizations");
 
     return (
-        <header className="w-full lg:h-14 h-11 flex items-center justify-between px-2 border-b">
+        <header className="w-full lg:h-14 h-11 flex items-center justify-between px-2 border-b
+            sticky z-10 top-0 backdrop-blur-lg">
             <section className="flex gap-x-3 items-center">
                 <Link to={'/'}>
                     <IconLogo />
@@ -24,9 +25,9 @@ export default function Header() {
                     {hideOrganization ?
                         <h1 className="font-semibold text-sm animate-fade-in-left">Organizations</h1>
                         :
-                        <div className="flex items-center justify-center gap-2 ">
+                        <div className="flex items-center justify-center sm:gap-2 ">
                             <h1 className="font-semibold text-sm animate-fade-in-left">{organization?.name}</h1>
-                            <div className=" font-semibold text-[12px] border-zinc-500
+                            <div className="max-sm:hidden font-semibold text-[12px] border-zinc-500
                                 border rounded-2xl px-2.5 py-1 pb-1cursor-pointer">
                                 {organization?.subscriptions[0].plan.name || ''}
                             </div>
