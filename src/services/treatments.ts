@@ -60,3 +60,19 @@ export const fetchDeleteTreatments = async (id: string) => {
 
     return await response.json();
 }
+
+export const fetchUpdateTreatments = async (data:GetTreatments) => {
+    const response = await fetch(`${apilocal}/treatments/${data.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+        throw new Error("Error updating treatments");
+    }
+
+    return await response.json();
+}
