@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
-  const { organization } = useOrganization();
+  const { organization, openMenu,setOpenMenu } = useOrganization();
   const location = useLocation();
   const [selected, setSelected] = useState("");
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
@@ -60,10 +60,26 @@ export default function Sidebar() {
   };
 
   const isActive = (path: string) => location.pathname === path;
+  const isMobile = window.innerWidth < 640;
+
 
   return (
-    <aside className="w-[260px] h-full border-r p-4 overflow-y-auto text-[12px]">
-      {labels.map((label) => {
+    <>
+      {openMenu && isMobile && (
+        <div
+          onClick={() => setOpenMenu(false)}
+          className="fixed inset-0 bg-background/40"
+        />
+      )}
+
+      <aside
+        className={`
+        w-[260px] min-h-full border-r p-4 overflow-y-auto text-[12px]
+        transition-transform duration-300 ease-in-out
+        ${isMobile ? "fixed z-20 bg-background h-full" : ""}
+        ${isMobile && !openMenu ? "-translate-x-full" : "translate-x-0"}
+      `}
+      >      {labels.map((label) => {
         const isSelected = selected === label.name;
 
         if (label.children) {
@@ -90,11 +106,10 @@ export default function Sidebar() {
                         key={child.name}
                         to={child.path}
                         onClick={() => setSelected(label.name)}
-                        className={`block px-3 py-1.5 rounded-md text-[10px] transition-colors ${
-                          active
-                            ? "bg-muted font-bold"
-                            : "font-semibold hover:bg-secondary hover:font-bold"
-                        }`}
+                        className={`block px-3 py-1.5 rounded-md text-[10px] transition-colors ${active
+                          ? "bg-muted font-bold"
+                          : "font-semibold hover:bg-secondary hover:font-bold"
+                          }`}
                       >
                         {child.name}
                       </Link>
@@ -119,6 +134,7 @@ export default function Sidebar() {
           </Link>
         );
       })}
-    </aside>
+      </aside>
+    </>
   );
 }

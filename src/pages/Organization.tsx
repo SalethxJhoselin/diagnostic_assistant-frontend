@@ -87,7 +87,7 @@ export default function Organizations() {
 
     return (
         <>
-            <div className="flex flex-col lg:mx-46 sm:mx-20 mx-6 h-auto">
+            <div className="flex flex-col xl:mx-46 md:mx-25 sm:mx-20 mx-6">
                 <section className="flex flex-col sm:mt-10 mt-4 sm:gap-y-8 gap-y-6">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-primary 
                         to-primary/60 bg-clip-text text-transparent py-2">
@@ -126,28 +126,30 @@ export default function Organizations() {
                     </div>
                 </section>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+                <div className="flex flex-wrap gap-6 py-10">
                     {filteredOrganizations?.map((organization) => (
                         <article
                             onClick={() => handleClickOrganization(organization)}
                             key={organization.id}
-                            className="flex w-full  md:w-[370px] px-5 py-4 gap-4 items-center group 
+                            className="sm:w-[400px] xl:w-[420px] w-full px-5 py-4 gap-4 items-center group 
                                   bg-secondary backdrop-blur-sm rounded-xl
                                     border border-gray-400/20 dark:border-gray-700/50 hover:border-primary/50
                                     transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
                         >
-                            <div className="bg-primary/10 dark:bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/20
+                            <div className="flex items-start gap-3">
+                                <div className="bg-primary/10 dark:bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/20
                                  dark:group-hover:bg-primary/30 transition-colors duration-300">
-                                <IconBoxes />
-                            </div>
+                                    <IconBoxes />
+                                </div>
 
-                            <div className="">
-                                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                                    {organization.name}
-                                </h2>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
-                                </p>
+                                <div className="">
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                        {organization.name}
+                                    </h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
+                                    </p>
+                                </div>
                             </div>
                         </article>
                     ))}
@@ -161,43 +163,44 @@ export default function Organizations() {
                 </div>
 
                 {open && (
-                    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div
+                        className="fixed inset-0 z-50 bg-black/50 bg-opacity-50 flex items-center justify-center"
+                        onClick={() => setOpen(false)}
+                    >
                         <div
-                            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300"
+                            className="bg-secondary rounded-md shadow-xl w-full sm:w-xl mx-2"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-                                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Crear Nueva Organización</h2>
+                            <div className="flex justify-between items-center border-b px-6 py-3">
+                                <h2 className="text-md font-semibold">Create a new organization</h2>
                             </div>
-                            <div className="p-6 space-y-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Nombre de la Organización
-                                        </label>
+                            <section className="flex flex-col px-6 py-3">
+                                <div className="flex justify-between pb-4">
+                                    <h2 className="font-semibold">Name</h2>
+                                    <div className="flex flex-col gap-2">
                                         <input
-                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            className="w-full sm:w-sm px-2 py-1 border rounded-md"
                                             type="text"
-                                            placeholder="Ingresa el nombre de tu organización"
+                                            placeholder="name to organization"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                         />
-                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                            ¿Cuál es el nombre de tu empresa o equipo?
-                                        </p>
+                                        <span className="text-sm">
+                                            What's the name of your company or team?
+                                        </span>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Plan
-                                        </label>
+                                <div className="flex justify-between pb-4">
+                                    <h2 className="font-semibold">Plan</h2>
+                                    <div className="flex flex-col gap-2">
                                         <Select value={selectedPlan} onValueChange={(val) => setSelectedPlan(val)}>
-                                            <SelectTrigger className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                                                <SelectValue placeholder="Selecciona un plan" />
+                                            <SelectTrigger className="sm:w-[385px] w-full">
+                                                <SelectValue placeholder="Select a plan" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
-                                                    <SelectLabel>Planes Disponibles</SelectLabel>
+                                                    <SelectLabel>Plans</SelectLabel>
                                                     {plans?.map((plan) => (
                                                         <SelectItem key={plan.id} value={plan.id}>
                                                             {`${plan.name} - $${plan.price}`}
@@ -206,25 +209,24 @@ export default function Organizations() {
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
-                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                            El plan se aplicará a tu nueva organización.
-                                        </p>
+                                        <span className="text-sm">
+                                            The Plan applies to your new organization.
+                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-end gap-4">
-                                <Button
-                                    variant="outline"
-                                    className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                            </section>
+                            <div className="border-t px-6 py-3 flex items-center justify-between">
+                                <button
+                                    className="border border-zinc-500 rounded-md px-4 py-1 text-[14px] hover:bg-zinc-600 transition-all font-semibold"
                                     onClick={() => setOpen(false)}
                                 >
-                                    Cancelar
-                                </Button>
+                                    Cerrar
+                                </button>
                                 <Button
-                                    className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all duration-200"
+                                    className="text-white cursor-pointer"
                                     onClick={handleCreateOrganization}
                                 >
-                                    Crear Organización
+                                    Create Organization
                                 </Button>
                             </div>
                         </div>
