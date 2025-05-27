@@ -9,17 +9,15 @@ import {
     type AttentionHour,
     type CreateAttentionHour
 } from '../../services/attentionHours';
-import { Button, Table, Modal, Form, Select, TimePicker, message } from 'antd';
+import { Button as UIButton } from "@/components/ui/button";
+import { Button } from "antd";
+import { useOrganization } from "@/hooks/organizationContex";
+import { EditOutlined, DeleteOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Modal, Form, Select, TimePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { useOrganization } from "@/hooks/organizationContex";
-import {
-    EditOutlined,
-    DeleteOutlined,
-    UserAddOutlined
-} from '@ant-design/icons';
-
+import { toast } from "sonner";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -130,88 +128,89 @@ export default function Schedules() {
         }
     };
 
-    const columns = [
-        {
-            title: 'Días',
-            dataIndex: 'days',
-            key: 'days',
-            render: (days: string[]) => days.join(', ')
-        },
-        {
-            title: 'Hora de inicio',
-            dataIndex: 'startTime',
-            key: 'startTime',
-            render: (time: string) => dayjs.utc(time).format('HH:mm')
-        },
-        {
-            title: 'Hora de fin',
-            dataIndex: 'endTime',
-            key: 'endTime',
-            render: (time: string) => dayjs.utc(time).format('HH:mm')
-        },
-        {
-            title: 'Acciones',
-            key: 'actions',
-            render: (_: any, record: AttentionHour) => (
-                <>
-                    <Button
-                        type="link"
-                        icon={<EditOutlined style={{ fontSize: '30px' }} />}
+    return (
+        <div className="w-full flex flex-col sm:px-20 px-4 py-10">
+            <section className="mb-8">
+                <h1 className="text-2xl mb-4 font-semibold">Horarios de Atención</h1>
+                <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4">
+                    <UIButton
+                        className="hover:bg-primary/90 border-zinc-400 px-6 py-2 cursor-pointer animate-fade-in-left"
                         onClick={() => {
-                            setSelectedSchedule(record);
-                            form.setFieldsValue({
-                                days: record.days,
-                                timeRange: [
-                                    dayjs.utc(record.startTime),
-                                    dayjs.utc(record.endTime)
-                                ]
-                            });
+                            setSelectedSchedule(null);
+                            form.resetFields();
                             setIsModalVisible(true);
                         }}
-                        style={{ marginRight: 8 }}
-                    />
+                    >
+                        Agregar Horario
+                    </UIButton>
+                </div>
+            </section>
 
-                    <Button
-                        type="link"
-                        danger
-                        icon={<DeleteOutlined style={{ fontSize: '30px' }} />}
-                        onClick={() => handleDelete(record.id)}
-                        style={{ marginRight: 8 }}
-                    />
-
-                    <Button
-                        type="link"
-                        icon={<UserAddOutlined style={{ fontSize: '30px' }} />}
-                        onClick={() => {
-                            setSelectedSchedule(record);
-                            setIsAssignModalVisible(true);
-                        }}
-                    />
-                </>
-            )
-        }
-    ];
-
-    return (
-        <div className="p-6">
-            <div className="mb-4">
-                <Button
-                    type="primary"
-                    onClick={() => {
-                        setSelectedSchedule(null);
-                        form.resetFields();
-                        setIsModalVisible(true);
-                    }}
-                >
-                    Agregar Horario
-                </Button>
+            <div className="w-full overflow-x-auto border rounded-md">
+                <table className="min-w-full table-auto border-collapse">
+                    <thead className="bg-secondary border-b">
+                        <tr>
+                            <th className="text-left px-4 py-2 border-r">Días</th>
+                            <th className="text-left px-4 py-2 border-r">Hora de inicio</th>
+                            <th className="text-left px-4 py-2 border-r">Hora de fin</th>
+                            <th className="text-left px-4 py-2">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {schedules.map((schedule) => (
+                            <tr key={schedule.id} className="group text-[14px]">
+                                <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    {schedule.days.join(', ')}
+                                </td>
+                                <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    {dayjs.utc(schedule.startTime).format('HH:mm')}
+                                </td>
+                                <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    {dayjs.utc(schedule.endTime).format('HH:mm')}
+                                </td>
+                                <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    <div className="flex gap-2">
+                                        <UIButton
+                                            className="border-primary text-primary hover:bg-primary/10"
+                                            variant="outline"
+                                            onClick={() => {
+                                                setSelectedSchedule(schedule);
+                                                form.setFieldsValue({
+                                                    days: schedule.days,
+                                                    timeRange: [
+                                                        dayjs.utc(schedule.startTime),
+                                                        dayjs.utc(schedule.endTime)
+                                                    ]
+                                                });
+                                                setIsModalVisible(true);
+                                            }}
+                                        >
+                                            <EditOutlined />
+                                        </UIButton>
+                                        <UIButton
+                                            className="border-red-500 text-red-500 hover:bg-red-500/10"
+                                            variant="outline"
+                                            onClick={() => handleDelete(schedule.id)}
+                                        >
+                                            <DeleteOutlined />
+                                        </UIButton>
+                                        <UIButton
+                                            className="border-primary text-primary hover:bg-primary/10"
+                                            variant="outline"
+                                            onClick={() => {
+                                                setSelectedSchedule(schedule);
+                                                setIsAssignModalVisible(true);
+                                            }}
+                                        >
+                                            <UserAddOutlined />
+                                        </UIButton>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
-
-            <Table
-                columns={columns}
-                dataSource={schedules}
-                rowKey="id"
-            />
 
             <Modal
                 title={selectedSchedule ? "Editar Horario" : "Crear Horario"}
@@ -269,7 +268,6 @@ export default function Schedules() {
                         rules={[{ required: true, message: 'Por favor seleccione un usuario' }]}
                     >
                         <Select placeholder="Seleccione un usuario">
-                            {/* TODO: Cargar lista de usuarios disponibles */}
                             <Option value="user1">Usuario 1</Option>
                             <Option value="user2">Usuario 2</Option>
                         </Select>
