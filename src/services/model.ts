@@ -1,7 +1,7 @@
 import { apiModel } from "./api";
 
 export const fetchModel = async (formData: FormData) => {
-  const response = await fetch(apiModel, {
+  const response = await fetch(`${apiModel}/predict`, {
     method: "POST",
     body: formData,
   });
