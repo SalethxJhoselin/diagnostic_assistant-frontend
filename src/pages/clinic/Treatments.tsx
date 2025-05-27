@@ -4,7 +4,7 @@ import ModalCreateTreat from "@/components/treatments/ModalCreateTreatments";
 import ModalEditTreat from "@/components/treatments/ModalEditTreatments";
 import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
-import { fetchDeleteTreatments, fetchTreatmentsByOrg, type GetTreatments } from "@/services/treatments";
+import { fetchDeleteTreatments, fetchTreatmentsByOrg, type GetTreatments } from "@/services/treatments.services";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 

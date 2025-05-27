@@ -8,7 +8,6 @@ import Admin from "./pages/Admin";
 import Home from "./pages/Home";
 import Patients from "./pages/clinic/Patients";
 import Consultations from "./pages/clinic/Consultations";
-import Diagnostics from "./pages/clinic/Diagnostics";
 import Treatments from "./pages/clinic/Treatments";
 import MedicalAppointments from "./pages/appointments/MedicalAppointments";
 import Schedules from "./pages/appointments/Schedules";
@@ -16,6 +15,7 @@ import { useAuth } from "@clerk/clerk-react";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
+import Diagnoses from "./pages/clinic/Diagnoses";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -59,7 +59,7 @@ export function Router() {
 
                 <Route path="/dashboard/org/:id/clinic/patients" element={<Patients />} />
                 <Route path="/dashboard/org/:id/clinic/consultations" element={<Consultations />} />
-                <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnostics />} />
+                <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnoses />} />
                 <Route path="/dashboard/org/:id/clinic/treatments" element={<Treatments />} />
 
                 <Route path="/dashboard/org/:id/appointments" element={<MedicalAppointments />} />

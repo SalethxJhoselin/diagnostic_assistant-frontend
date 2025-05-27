@@ -1,4 +1,4 @@
-import { fetchTreatmentsByOrg, fetchUpdateTreatments, type GetTreatments } from "@/services/treatments";
+import { fetchTreatmentsByOrg, fetchUpdateTreatments, type GetTreatments } from "@/services/treatments.services";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
