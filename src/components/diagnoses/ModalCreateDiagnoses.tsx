@@ -1,64 +1,60 @@
-import { fetchCreateTreatment, type CreateTreatment, type GetTreatments } from "@/services/treatments.services";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
+import { fetchCreateDiagnoses, type CreateDiagnoses, type GetDiagnoses } from "@/services/diagnoses.services";
 
-interface ModalCreateTreatProps {
+interface ModalCreateDiagProps {
     setOpenModal: (open: boolean) => void;
-    setTreatments: React.Dispatch<React.SetStateAction<GetTreatments[]>>;
-    setFilteredTreatments: React.Dispatch<React.SetStateAction<GetTreatments[]>>;
+    setDiagnoses: React.Dispatch<React.SetStateAction<GetDiagnoses[]>>;
+    setFilteredDiagnoses: React.Dispatch<React.SetStateAction<GetDiagnoses[]>>;
 }
 
-export default function ModalCreateTreat(
-    { setOpenModal, setTreatments, setFilteredTreatments }: ModalCreateTreatProps
+export default function ModalCreateDiag(
+    { setOpenModal, setDiagnoses, setFilteredDiagnoses }: ModalCreateDiagProps
 ) {
     const { organization } = useOrganization();
+    const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [instructions, setInstructions] = useState("");
-    const [duration, setDuration] = useState("");
-    const durationOptions = ["3 days", "5 days", "1 week", "2 weeks", "1 month"];
-    const maxInstructionsLength = 500;
+    const maxDescriptionsLength = 500;
 
 
-    const handleCreateTreatment = async () => {
+    const handleCreateDiagnoses = async () => {
         if (!organization) return;
-        if (!description || !duration || !instructions) {
+        if (!description  || !name) {
             toast.error("Todos los campos son obligatorios");
             return;
         }
-        const newTreatment: CreateTreatment = {
+        const newTreatment: CreateDiagnoses = {
+            name,
             description,
-            duration,
-            instructions,
             organizationId: organization.id
         };
 
         const createPromise = new Promise(async (resolve, reject) => {
             try {
-                const result = await fetchCreateTreatment(newTreatment);
+                const result = await fetchCreateDiagnoses(newTreatment);
                 resolve("success");
-                setTreatments(prev => [...prev, result]);
-                setFilteredTreatments(prev => [...prev, result]);
+                setDiagnoses(prev => [...prev, result]);
+                setFilteredDiagnoses(prev => [...prev, result]);
             } catch (error) {
                 reject(error);
             }
         });
 
         toast.promise(createPromise, {
-            loading: "Creando tratamiento...",
-            success: "Tratamiento creado correctamente",
-            error: "Error al crear tratamiento",
+            loading: "Creando diagnostico...",
+            success: "diagnostico creado correctamente",
+            error: "Error al crear diagnostico",
         });
 
         try {
             await createPromise;
             setOpenModal(false);
             setDescription("");
-            setDuration("");
-            setInstructions("");
+            setName("");
         } catch (error) {
-            console.error("Error al crear tratamiento", error);
+            console.error("Error al crear diagnostico", error);
         }
     };
 
@@ -72,48 +68,35 @@ export default function ModalCreateTreat(
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center border-b px-6 py-3">
-                    <h2 className="text-md font-semibold">Crear tratamiento</h2>
+                    <h2 className="text-md font-semibold">Crear diagnostico</h2>
                 </div>
                 <section className="flex flex-col px-6 py-3">
                     <div className="flex flex-col gap-4 pb-4">
                         <div>
-                            <label className="font-semibold">Descripción</label>
+                            <label className="font-semibold">Nombre</label>
                             <input
                                 type="text"
                                 className="w-full px-2 py-1 border rounded-md"
-                                placeholder="Descripción del tratamiento"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Descripción del diagnostico"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                             />
                         </div>
                         <div>
-                            <label className="font-semibold">Duración</label>
-                            <select
-                                className="w-full px-2 py-1 border rounded-md"
-                                value={duration}
-                                onChange={(e) => setDuration(e.target.value)}
-                            >
-                                <option value="">Seleccione una duración</option>
-                                {durationOptions.map(option => (
-                                    <option key={option} value={option}>{option}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-semibold">Instrucciones</label>
+                            <label className="font-semibold">Descripcion</label>
                             <textarea
                                 className="w-full px-2 py-1 border rounded-md"
                                 rows={3}
                                 placeholder="Ej: No comer antes de..."
-                                value={instructions}
+                                value={description}
                                 onChange={(e) => {
-                                    if (e.target.value.length <= maxInstructionsLength) {
-                                        setInstructions(e.target.value);
+                                    if (e.target.value.length <= maxDescriptionsLength) {
+                                        setDescription(e.target.value);
                                     }
                                 }}
                             />
                             <p className="text-sm text-gray-500">
-                                {instructions.length}/{maxInstructionsLength} caracteres
+                                {description.length}/{maxDescriptionsLength} caracteres
                             </p>
                         </div>
                     </div>
@@ -128,9 +111,9 @@ export default function ModalCreateTreat(
                     </button>
                     <Button
                         className="text-white cursor-pointer"
-                        onClick={handleCreateTreatment}
+                        onClick={handleCreateDiagnoses}
                     >
-                        Guardar Tratamiento
+                        Guardar diagnostico
                     </Button>
                 </div>
             </div>
