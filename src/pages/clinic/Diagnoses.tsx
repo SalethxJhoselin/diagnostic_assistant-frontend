@@ -1,23 +1,23 @@
 import { IconSearch } from "@/assets/icons";
+import ModalCreateDiag from "@/components/diagnoses/ModalCreateDiagnoses";
+import ModalEditDiag from "@/components/diagnoses/ModalEditDiagnoses";
 import ModalConfirmation from "@/components/ModalConfirmation";
-import ModalCreateTreat from "@/components/treatments/ModalCreateTreatments";
-import ModalEditTreat from "@/components/treatments/ModalEditTreatments";
 import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
-import { fetchDeleteTreatments, fetchTreatmentsByOrg, type GetTreatments } from "@/services/treatments.services";
+import { fetchDeleteDiagnoses, fetchDiagnosesByOrg, type GetDiagnoses } from "@/services/diagnoses.services";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function Treatments() {
+export default function Diagnoses() {
     const [searchQuery, setSearchQuery] = useState("");
-    const [treatments, setTreatments] = useState<GetTreatments[]>([]);
-    const [filteredTreatments, setFilteredTreatments] = useState<GetTreatments[]>([]);
+    const [diagnoses, setDiagnoses] = useState<GetDiagnoses[]>([]);
+    const [filteredDiagnoses, setFilteredDiagnoses] = useState<GetDiagnoses[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
-    const [editTreatment, setEditTreatment] = useState<GetTreatments | null>(null);
+    const [editDiagnose, setEditDiagnose] = useState<GetDiagnoses | null>(null);
     const [openModal, setOpenModal] = useState(false);
     const [openModalConfirmation, setOpenModalConfirmation] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [sortField, setSortField] = useState<"description" | "duration" | "instructions">("description");
+    const [sortField, setSortField] = useState<"name" | "description">("name");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -29,11 +29,11 @@ export default function Treatments() {
             if (!organization) return;
             setIsLoading(true);
             try {
-                const treatments = await fetchTreatmentsByOrg(organization.id);
-                setTreatments(treatments);
-                setFilteredTreatments(treatments);
+                const diagnoses = await fetchDiagnosesByOrg(organization.id);
+                setDiagnoses(diagnoses);
+                setFilteredDiagnoses(diagnoses);
             } catch (error) {
-                console.error("Error fetching treatments:", error);
+                console.error("Error fetching diagnoses:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -42,23 +42,22 @@ export default function Treatments() {
     }, [organization]);
 
     useEffect(() => {
-        let sortedTreatments = [...treatments].sort((a, b) => {
+        let sortedDiagnoses = [...diagnoses].sort((a, b) => {
             const fieldA = a[sortField].toLowerCase();
             const fieldB = b[sortField].toLowerCase();
             return sortOrder === "asc" ? fieldA.localeCompare(fieldB) : fieldB.localeCompare(fieldA);
         });
 
-        sortedTreatments = sortedTreatments.filter(treatment =>
-            treatment.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            treatment.duration.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            treatment.instructions.toLowerCase().includes(searchQuery.toLowerCase())
+        sortedDiagnoses = sortedDiagnoses.filter(diagnose =>
+            diagnose.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            diagnose.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
-        setFilteredTreatments(sortedTreatments);
-    }, [searchQuery, treatments, sortField, sortOrder]);
+        setFilteredDiagnoses(sortedDiagnoses);
+    }, [searchQuery, diagnoses, sortField, sortOrder]);
 
-    const totalPages = Math.ceil(filteredTreatments.length / itemsPerPage);
-    const paginatedTreatments = filteredTreatments.slice(
+    const totalPages = Math.ceil(filteredDiagnoses.length / itemsPerPage);
+    const paginatedDiagnoses = filteredDiagnoses.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
@@ -69,7 +68,7 @@ export default function Treatments() {
         );
     };
 
-    const handleSort = (field: "description" | "duration" | "instructions") => {
+    const handleSort = (field: "description" | "name" ) => {
         if (sortField === field) {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
@@ -81,25 +80,25 @@ export default function Treatments() {
     const handleDelete = async () => {
         if (selectedIds.length === 0) return;
         const promise = Promise.all(
-            selectedIds.map(id => fetchDeleteTreatments(id))
+            selectedIds.map(id => fetchDeleteDiagnoses(id))
         );
 
         toast.promise(promise, {
-            loading: "Eliminando tratamientos...",
-            success: "Tratamientos eliminados correctamente",
-            error: "Hubo un error al eliminar los tratamientos",
+            loading: "Eliminando diagnosticos...",
+            success: "diagnosticos eliminados correctamente",
+            error: "Hubo un error al eliminar los diagnosticos",
         });
 
         try {
             await promise;
             if (!organization) return;
-            const updatedTreatments = await fetchTreatmentsByOrg(organization.id);
+            const updatedDiagnoses = await fetchDiagnosesByOrg(organization.id);
             setOpenModalConfirmation(false);
-            setTreatments(updatedTreatments);
-            setFilteredTreatments(updatedTreatments);
+            setDiagnoses(updatedDiagnoses);
+            setFilteredDiagnoses(updatedDiagnoses);
             setSelectedIds([]);
         } catch (error) {
-            console.error("Error deleting treatments:", error);
+            console.error("Error deleting diagnoses:", error);
         }
     };
 
@@ -108,13 +107,13 @@ export default function Treatments() {
     return (
         <div className="w-full flex flex-col sm:px-20 px-4 py-10">
             <section className="mb-8">
-                <h1 className="text-2xl mb-4 font-semibold">Tratamientos</h1>
+                <h1 className="text-2xl mb-4 font-semibold">diagnosticos</h1>
                 <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4">
                     <Button
                         className="hover:bg-primary/90 border-zinc-400 px-6 py-2 cursor-pointer animate-fade-in-left"
-                        onClick={()=> setOpenModal(true)}
+                        onClick={() => setOpenModal(true)}
                     >
-                        Nuevo Tratamiento
+                        Nuevo Diagnostico
                     </Button>
 
                     <div className="flex items-center relative group">
@@ -124,7 +123,7 @@ export default function Treatments() {
                         <input
                             className="w-full sm:w-80 border rounded-lg pl-12 py-0.5 bg-[var(--input-soft)]"
                             type="search"
-                            placeholder="Buscar por nombre o plan..."
+                            placeholder="Buscar por nombre o descripcion..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -134,7 +133,7 @@ export default function Treatments() {
                             className="hover:bg-pink-700 bg-pink-600 text-white px-6 py-2 cursor-pointer animate-fade-in-left"
                             onClick={() => setOpenModalConfirmation(true)}
                         >
-                            Eliminar {selectedIds.length} Tratamiento(s)
+                            Eliminar {selectedIds.length} Diagnostico(s)
                         </Button>
                     )}
                 </div>
@@ -143,29 +142,26 @@ export default function Treatments() {
                 <table className="min-w-full table-auto border-collapse">
                     <thead className="bg-secondary border-b">
                         <tr>
-                            <th className="text-center px-4 py-2 border-r">
+                            <th className="w-[40px] text-center px-4 py-2 border-r">
                                 <input
                                     type="checkbox"
-                                    checked={selectedIds.length === filteredTreatments.length && filteredTreatments.length > 0}
+                                    checked={selectedIds.length === filteredDiagnoses.length && filteredDiagnoses.length > 0}
                                     onChange={() => {
-                                        if (selectedIds.length === filteredTreatments.length) {
+                                        if (selectedIds.length === filteredDiagnoses.length) {
                                             setSelectedIds([]);
                                         } else {
-                                            setSelectedIds(filteredTreatments.map(treatment => treatment.id));
+                                            setSelectedIds(filteredDiagnoses.map(diagnose => diagnose.id));
                                         }
                                     }}
                                 />
                             </th>
+                            <th className="w-[300px] text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("name")}>
+                                Nombre {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                            </th>
                             <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("description")}>
                                 Descripción {sortField === "description" && (sortOrder === "asc" ? "↑" : "↓")}
                             </th>
-                            <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("duration")}>
-                                Duración {sortField === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
-                            </th>
-                            <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("instructions")}>
-                                Instrucción {sortField === "instructions" && (sortOrder === "asc" ? "↑" : "↓")}
-                            </th>
-                            <th className="text-left px-4 py-2">Acciones</th>
+                            <th className="w-[120px] text-left px-4 py-2">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -173,42 +169,39 @@ export default function Treatments() {
                             <tr>
                                 <td colSpan={6} className="text-center py-4">
                                     <span>
-                                        Cargando tratamientos...
+                                        Cargando diagnosticos...
                                     </span>
                                 </td>
                             </tr>
-                        ) : paginatedTreatments.length === 0 ? (
+                        ) : paginatedDiagnoses.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="text-center py-4">
-                                    No se encontraron tratamientos.
+                                    No se encontraron diagnosticos.
                                 </td>
                             </tr>
                         ) : (
-                            paginatedTreatments.map((treatment) => (
-                                <tr key={treatment.id} className="group text-[14px]">
+                            paginatedDiagnoses.map((diagnose) => (
+                                <tr key={diagnose.id} className="group text-[14px]">
                                     <td className="px-4 py-1 border text-center group-hover:border-zinc-400
                                         transition-colors duration-200 animate-fade-in-up">
                                         <input
                                             type="checkbox"
-                                            checked={selectedIds.includes(treatment.id)}
-                                            onChange={() => toggleSelect(treatment.id)}
+                                            checked={selectedIds.includes(diagnose.id)}
+                                            onChange={() => toggleSelect(diagnose.id)}
                                         />
                                     </td>
                                     <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        {treatment.description}
+                                        {diagnose.name}
                                     </td>
                                     <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        {treatment.duration}
-                                    </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        {treatment.instructions}
+                                        {diagnose.description}
                                     </td>
                                     <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
                                         <Button
                                             className=" border-primary text-primary hover:bg-primary/10"
                                             variant="outline"
                                             onClick={() => {
-                                                setEditTreatment(treatment);
+                                                setEditDiagnose(diagnose);
                                             }}
                                         >
                                             Ver/Editar
@@ -238,18 +231,18 @@ export default function Treatments() {
                 </div>
             )}
             {openModal && (
-                <ModalCreateTreat
+                <ModalCreateDiag
                     setOpenModal={setOpenModal}
-                    setTreatments={setTreatments}
-                    setFilteredTreatments={setFilteredTreatments}
+                    setDiagnoses={setDiagnoses}
+                    setFilteredDiagnoses={setFilteredDiagnoses}
                 />
             )}
-            {editTreatment && (
-                <ModalEditTreat
-                    setEditTreatment={setEditTreatment}
-                    setTreatments={setTreatments}
-                    setFilteredTreatments={setFilteredTreatments}
-                    editTreatment={editTreatment}
+            {editDiagnose && (
+                <ModalEditDiag
+                    setEditDiagnose={setEditDiagnose}
+                    setDiagnoses={setDiagnoses}
+                    setFilteredDiagnoses={setFilteredDiagnoses}
+                    editDiagnose={editDiagnose}
                 />
             )}
             {openModalConfirmation && (
@@ -261,8 +254,8 @@ export default function Treatments() {
                         handleDelete();
                         setOpenModal(false);
                     }}
-                    title="Eliminar tratamientos"
-                    message={`¿Estás seguro de eliminar ${selectedIds.length} tratamiento(s)? Esta acción no se puede deshacer.`}
+                    title="Eliminar diagnosticos"
+                    message={`¿Estás seguro de eliminar ${selectedIds.length} Diagnostico(s)? Esta acción no se puede deshacer.`}
                     confirmText="Eliminar"
                     cancelText="Cancelar"
                 />

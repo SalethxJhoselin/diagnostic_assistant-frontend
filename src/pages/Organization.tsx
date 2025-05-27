@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/select";
 import { useOrganization } from "@/hooks/organizationContex";
 import type { Organization, Plan } from "@/lib/interfaces";
-import { fetchFindAllPlans, fetchOrganizationsByUser, fetchOrgById, fetchOrgCreate, fetchSubsCreate, type CreateOrg, type CreateSubs } from "@/services/organizations";
+import { fetchFindAllPlans, fetchOrganizationsByUser, fetchOrgById, fetchOrgCreate, fetchSubsCreate, type CreateOrg, type CreateSubs } from "@/services/organizations.services";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
