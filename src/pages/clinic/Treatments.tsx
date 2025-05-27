@@ -1,7 +1,10 @@
 import { IconSearch } from "@/assets/icons";
+import ModalConfirmation from "@/components/ModalConfirmation";
+import ModalCreateTreat from "@/components/treatments/ModalCreateTreatments";
+import ModalEditTreat from "@/components/treatments/ModalEditTreatments";
 import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
-import { fetchCreateTreatment, fetchDeleteTreatments, fetchTreatmentsByOrg, type CreateTreatment, type GetTreatments } from "@/services/treatments";
+import { fetchDeleteTreatments, fetchTreatmentsByOrg, type GetTreatments } from "@/services/treatments";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -10,37 +13,55 @@ export default function Treatments() {
     const [treatments, setTreatments] = useState<GetTreatments[]>([]);
     const [filteredTreatments, setFilteredTreatments] = useState<GetTreatments[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [editTreatment, setEditTreatment] = useState<GetTreatments | null>(null);
     const [openModal, setOpenModal] = useState(false);
-    const [description, setDescription] = useState("");
-    const [duration, setDuration] = useState("");
-    const [instructions, setInstructions] = useState("");
+    const [openModalConfirmation, setOpenModalConfirmation] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [sortField, setSortField] = useState<"description" | "duration" | "instructions">("description");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
-
-    const { organization } = useOrganization()
+    const { organization } = useOrganization();
 
     useEffect(() => {
         const fetchData = async () => {
             if (!organization) return;
+            setIsLoading(true);
             try {
                 const treatments = await fetchTreatmentsByOrg(organization.id);
-                console.log(treatments);
                 setTreatments(treatments);
                 setFilteredTreatments(treatments);
             } catch (error) {
                 console.error("Error fetching treatments:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchData();
-    }, [organization])
+    }, [organization]);
 
     useEffect(() => {
-        const filteredTreatments = treatments.filter(treatment =>
+        let sortedTreatments = [...treatments].sort((a, b) => {
+            const fieldA = a[sortField].toLowerCase();
+            const fieldB = b[sortField].toLowerCase();
+            return sortOrder === "asc" ? fieldA.localeCompare(fieldB) : fieldB.localeCompare(fieldA);
+        });
+
+        sortedTreatments = sortedTreatments.filter(treatment =>
             treatment.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
             treatment.duration.toLowerCase().includes(searchQuery.toLowerCase()) ||
             treatment.instructions.toLowerCase().includes(searchQuery.toLowerCase())
         );
-        setFilteredTreatments(filteredTreatments);
-    }, [searchQuery, treatments])
+
+        setFilteredTreatments(sortedTreatments);
+    }, [searchQuery, treatments, sortField, sortOrder]);
+
+    const totalPages = Math.ceil(filteredTreatments.length / itemsPerPage);
+    const paginatedTreatments = filteredTreatments.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     const toggleSelect = (id: string) => {
         setSelectedIds(prev =>
@@ -48,9 +69,17 @@ export default function Treatments() {
         );
     };
 
+    const handleSort = (field: "description" | "duration" | "instructions") => {
+        if (sortField === field) {
+            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        } else {
+            setSortField(field);
+            setSortOrder("asc");
+        }
+    };
+
     const handleDelete = async () => {
         if (selectedIds.length === 0) return;
-
         const promise = Promise.all(
             selectedIds.map(id => fetchDeleteTreatments(id))
         );
@@ -63,58 +92,17 @@ export default function Treatments() {
 
         try {
             await promise;
+            if (!organization) return;
+            const updatedTreatments = await fetchTreatmentsByOrg(organization.id);
+            setOpenModalConfirmation(false);
+            setTreatments(updatedTreatments);
+            setFilteredTreatments(updatedTreatments);
             setSelectedIds([]);
-            setFilteredTreatments(prev =>
-                prev.filter(treatment => !selectedIds.includes(treatment.id))
-            );
         } catch (error) {
             console.error("Error deleting treatments:", error);
         }
     };
 
-    const handleOpenModal = () => {
-        setOpenModal(true);
-    }
-
-    const handleCreateTreatment = async () => {
-        if (!organization) return;
-        if (!description || !duration || !instructions) {
-            toast.error("Todos los campos son obligatorios");
-            return;
-        }
-        const newTreatment: CreateTreatment = {
-            description,
-            duration,
-            instructions,
-            organizationId: organization.id
-        }
-
-        const createPromise = new Promise(async (resolve, reject) => {
-            try {
-                const result = await fetchCreateTreatment(newTreatment);
-                resolve("success");
-                setTreatments(prev => [...prev, result]);
-            } catch (error) {
-                reject(error);
-            }
-        });
-
-        toast.promise(createPromise, {
-            loading: "Creando tratamiento...",
-            success: "Tratamiento creado correctamente",
-            error: "Error al crear tratamiento",
-        });
-
-        try {
-            await createPromise;
-            setOpenModal(false);
-            setDescription("");
-            setDuration("");
-            setInstructions("");
-        } catch (error) {
-            console.error("Error al crear tratamiento", error);
-        }
-    };
 
 
     return (
@@ -123,9 +111,8 @@ export default function Treatments() {
                 <h1 className="text-2xl mb-4 font-semibold">Tratamientos</h1>
                 <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4">
                     <Button
-                        className="hover:bg-primary/90 border-zinc-400 px-6 py-2 
-                             cursor-pointer animate-fade-in-left"
-                        onClick={handleOpenModal}
+                        className="hover:bg-primary/90 border-zinc-400 px-6 py-2 cursor-pointer animate-fade-in-left"
+                        onClick={()=> setOpenModal(true)}
                     >
                         Nuevo Tratamiento
                     </Button>
@@ -142,17 +129,14 @@ export default function Treatments() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    {
-                        selectedIds.length > 0 && (
-                            <Button
-                                className="hover:bg-pink-700 bg-pink-600 text-white px-6 py-2
-                                 cursor-pointer animate-fade-in-left"
-                                onClick={handleDelete}
-                            >
-                                Eliminar {selectedIds.length} Tratamiento(s)
-                            </Button>
-                        )
-                    }
+                    {selectedIds.length > 0 && (
+                        <Button
+                            className="hover:bg-pink-700 bg-pink-600 text-white px-6 py-2 cursor-pointer animate-fade-in-left"
+                            onClick={() => setOpenModalConfirmation(true)}
+                        >
+                            Eliminar {selectedIds.length} Tratamiento(s)
+                        </Button>
+                    )}
                 </div>
             </section>
             <div className="w-full overflow-x-auto border rounded-md">
@@ -172,105 +156,119 @@ export default function Treatments() {
                                     }}
                                 />
                             </th>
-                            <th className="text-left px-4 py-2 border-r">Descripción</th>
-                            <th className="text-left px-4 py-2 border-r">Duración</th>
-                            <th className="text-left px-4 py-2 ">Instrucción</th>
+                            <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("description")}>
+                                Descripción {sortField === "description" && (sortOrder === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("duration")}>
+                                Duración {sortField === "duration" && (sortOrder === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("instructions")}>
+                                Instrucción {sortField === "instructions" && (sortOrder === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th className="text-left px-4 py-2">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredTreatments.map((treatment) => (
-                            <tr key={treatment.id} className="group">
-                                <td className="px-4 py-3 border text-center group-hover:border-zinc-400
-                                 transition-colors duration-200 animate-fade-in-up">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedIds.includes(treatment.id)}
-                                        onChange={() => toggleSelect(treatment.id)}
-                                    />
-                                </td>
-                                <td className="px-4 py-3 border group-hover:border-zinc-400
-                                 transition-colors duration-200 animate-fade-in-up">
-                                    {treatment.description}
-                                </td>
-                                <td className="px-4 py-3 border group-hover:border-zinc-400
-                                 transition-colors duration-200 animate-fade-in-up">
-                                    {treatment.duration}
-                                </td>
-                                <td className="px-4 py-3 border group-hover:border-zinc-400
-                                 transition-colors duration-200 animate-fade-in-up">
-                                    {treatment.instructions}
+                        {isLoading ? (
+                            <tr>
+                                <td colSpan={6} className="text-center py-4">
+                                    <span>
+                                        Cargando tratamientos...
+                                    </span>
                                 </td>
                             </tr>
-                        ))}
+                        ) : paginatedTreatments.length === 0 ? (
+                            <tr>
+                                <td colSpan={6} className="text-center py-4">
+                                    No se encontraron tratamientos.
+                                </td>
+                            </tr>
+                        ) : (
+                            paginatedTreatments.map((treatment) => (
+                                <tr key={treatment.id} className="group text-[14px]">
+                                    <td className="px-4 py-1 border text-center group-hover:border-zinc-400
+                                        transition-colors duration-200 animate-fade-in-up">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(treatment.id)}
+                                            onChange={() => toggleSelect(treatment.id)}
+                                        />
+                                    </td>
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                        {treatment.description}
+                                    </td>
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                        {treatment.duration}
+                                    </td>
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                        {treatment.instructions}
+                                    </td>
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                        <Button
+                                            className=" border-primary text-primary hover:bg-primary/10"
+                                            variant="outline"
+                                            onClick={() => {
+                                                setEditTreatment(treatment);
+                                            }}
+                                        >
+                                            Ver/Editar
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
-
-
-
                 </table>
             </div>
-            {openModal && (
-                <div
-                    className="fixed inset-0 z-50 bg-black/50 bg-opacity-50 flex items-center justify-center"
-                    onClick={() => setOpenModal(false)}
-                >
-                    <div
-                        className="bg-secondary rounded-md shadow-xl w-full sm:w-xl mx-2"
-                        onClick={(e) => e.stopPropagation()}
+            {totalPages > 1 && (
+                <div className="flex justify-between mt-4">
+                    <Button
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(prev => prev - 1)}
                     >
-                        <div className="flex justify-between items-center border-b px-6 py-3">
-                            <h2 className="text-md font-semibold">Crear tratamiento</h2>
-                        </div>
-                        <section className="flex flex-col px-6 py-3">
-                            <div className="flex flex-col gap-4 pb-4">
-                                <div>
-                                    <label className="font-semibold">Descripción</label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-2 py-1 border rounded-md"
-                                        placeholder="Descripción del tratamiento"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Duración</label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-2 py-1 border rounded-md"
-                                        placeholder="Ej: 30 minutos"
-                                        value={duration}
-                                        onChange={(e) => setDuration(e.target.value)}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Instrucciones</label>
-                                    <textarea
-                                        className="w-full px-2 py-1 border rounded-md"
-                                        rows={3}
-                                        placeholder="Ej: No comer antes de..."
-                                        value={instructions}
-                                        onChange={(e) => setInstructions(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </section>
-                        <div className="border-t px-6 py-3 flex items-center justify-between">
-                            <button
-                                className="border border-zinc-500 rounded-md px-4 py-1 text-[14px] hover:bg-zinc-600 transition-all font-semibold"
-                                onClick={() => setOpenModal(false)}
-                            >
-                                Cancelar
-                            </button>
-                            <Button
-                                className="text-white cursor-pointer"
-                                onClick={handleCreateTreatment}
-                            >
-                                Guardar Tratamiento
-                            </Button>
-                        </div>
-                    </div>
+                        Anterior
+                    </Button>
+                    <span>Página {currentPage} de {totalPages}</span>
+                    <Button
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage(prev => prev + 1)}
+                    >
+                        Siguiente
+                    </Button>
                 </div>
             )}
+            {openModal && (
+                <ModalCreateTreat
+                    setOpenModal={setOpenModal}
+                    setTreatments={setTreatments}
+                    setFilteredTreatments={setFilteredTreatments}
+                />
+            )}
+            {editTreatment && (
+                <ModalEditTreat
+                    setEditTreatment={setEditTreatment}
+                    setTreatments={setTreatments}
+                    setFilteredTreatments={setFilteredTreatments}
+                    editTreatment={editTreatment}
+                />
+            )}
+            {openModalConfirmation && (
+
+                <ModalConfirmation
+                    isOpen={openModalConfirmation}
+                    onClose={() => setOpenModalConfirmation(false)}
+                    onConfirm={() => {
+                        handleDelete();
+                        setOpenModal(false);
+                    }}
+                    title="Eliminar tratamientos"
+                    message={`¿Estás seguro de eliminar ${selectedIds.length} tratamiento(s)? Esta acción no se puede deshacer.`}
+                    confirmText="Eliminar"
+                    cancelText="Cancelar"
+                />
+            )
+
+            }
         </div>
     );
 }
