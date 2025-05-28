@@ -22,7 +22,6 @@ export default function SyncUserWithBackend() {
   useEffect(() => {
     if (user) {
       const email = user.primaryEmailAddress?.emailAddress;
-      const name = user.fullName || `${user.firstName} ${user.lastName}`;
       //marca para no repetir
       const alreadySynced = localStorage.getItem("user_synced");
 

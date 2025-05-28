@@ -112,16 +112,6 @@ export default function Organizations() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
-                            {searchQuery && (
-                                <button
-                                    onClick={() => setSearchQuery("")}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200"
-                                >
-                                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            )}
                         </div>
                     </div>
                 </section>
@@ -131,7 +121,7 @@ export default function Organizations() {
                         <article
                             onClick={() => handleClickOrganization(organization)}
                             key={organization.id}
-                            className="sm:w-[400px] xl:w-[420px] w-full px-5 py-4 gap-4 items-center group 
+                            className="sm:w-[370px] w-full px-5 py-4 gap-4 items-center group 
                                   bg-secondary backdrop-blur-sm rounded-xl
                                     border border-gray-400/20 dark:border-gray-700/50 hover:border-primary/50
                                     transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
