@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
-  const { organization, openMenu,setOpenMenu } = useOrganization();
+  const { organization, openMenu, setOpenMenu } = useOrganization();
   const location = useLocation();
   const [selected, setSelected] = useState("");
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
@@ -74,66 +74,70 @@ export default function Sidebar() {
 
       <aside
         className={`
-        w-[260px] min-h-full border-r p-4 overflow-y-auto text-[12px]
-        transition-transform duration-300 ease-in-out
-        ${isMobile ? "fixed z-20 bg-background h-full" : ""}
-        ${isMobile && !openMenu ? "-translate-x-full" : "translate-x-0"}
-      `}
-      >      {labels.map((label) => {
-        const isSelected = selected === label.name;
+          w-[260px] min-h-full text-[12px] transition-transform duration-300 ease-in-out
+          ${isMobile
+                  ? "fixed z-20 bg-background p-4 h-full overflow-y-auto"
+                  : "sticky top-[3.5rem] h-[calc(100vh-3.5rem)] border-r p-4 overflow-y-auto"}
+          ${isMobile && !openMenu ? "-translate-x-full" : "translate-x-0"}
+        `}
+      >
 
-        if (label.children) {
-          const isOpen = openSections[label.name] || false;
+
+        {labels.map((label) => {
+          const isSelected = selected === label.name;
+
+          if (label.children) {
+            const isOpen = openSections[label.name] || false;
+
+            return (
+              <div key={label.name} className="my-2">
+                <button
+                  onClick={() => toggleSection(label.name)}
+                  className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg transition-colors
+                  ${isSelected || isOpen ? "bg-secondary font-bold" : "hover:bg-secondary hover:font-bold font-semibold"}`}
+                >
+                  {label.icon}
+                  <span>{label.name}</span>
+                  <span className="ml-auto">{isOpen ? "▾" : "▸"}</span>
+                </button>
+
+                {isOpen && (
+                  <div className="ml-6 mt-1 space-y-1">
+                    {label.children.map((child) => {
+                      const active = isActive(child.path);
+                      return (
+                        <Link
+                          key={child.name}
+                          to={child.path}
+                          onClick={() => setSelected(label.name)}
+                          className={`block px-3 py-1.5 rounded-md text-[10px] transition-colors ${active
+                            ? "bg-muted font-bold"
+                            : "font-semibold hover:bg-secondary hover:font-bold"
+                            }`}
+                        >
+                          {child.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
 
           return (
-            <div key={label.name} className="my-2">
-              <button
-                onClick={() => toggleSection(label.name)}
-                className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg transition-colors
-                  ${isSelected || isOpen ? "bg-secondary font-bold" : "hover:bg-secondary hover:font-bold font-semibold"}`}
-              >
-                {label.icon}
-                <span>{label.name}</span>
-                <span className="ml-auto">{isOpen ? "▾" : "▸"}</span>
-              </button>
-
-              {isOpen && (
-                <div className="ml-6 mt-1 space-y-1">
-                  {label.children.map((child) => {
-                    const active = isActive(child.path);
-                    return (
-                      <Link
-                        key={child.name}
-                        to={child.path}
-                        onClick={() => setSelected(label.name)}
-                        className={`block px-3 py-1.5 rounded-md text-[10px] transition-colors ${active
-                          ? "bg-muted font-bold"
-                          : "font-semibold hover:bg-secondary hover:font-bold"
-                          }`}
-                      >
-                        {child.name}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        }
-
-        return (
-          <Link
-            key={label.name}
-            to={label.path}
-            onClick={() => setSelected(label.name)}
-            className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors 
+            <Link
+              key={label.name}
+              to={label.path}
+              onClick={() => setSelected(label.name)}
+              className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors 
               ${isActive(label.path || "") ? "bg-secondary font-bold" : "font-semibold hover:bg-secondary hover:font-bold"}`}
-          >
-            {label.icon}
-            <span>{label.name}</span>
-          </Link>
-        );
-      })}
+            >
+              {label.icon}
+              <span>{label.name}</span>
+            </Link>
+          );
+        })}
       </aside>
     </>
   );

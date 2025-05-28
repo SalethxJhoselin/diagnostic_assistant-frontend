@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
 import Diagnoses from "./pages/clinic/Diagnoses";
+import NewConsultation from "./pages/clinic/NewConsultation";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -59,6 +60,7 @@ export function Router() {
 
                 <Route path="/dashboard/org/:id/clinic/patients" element={<Patients />} />
                 <Route path="/dashboard/org/:id/clinic/consultations" element={<Consultations />} />
+                <Route path="/dashboard/org/:id/clinic/consultations/new" element={<NewConsultation />} />
                 <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnoses />} />
                 <Route path="/dashboard/org/:id/clinic/treatments" element={<Treatments />} />
 
