@@ -22,7 +22,7 @@ export default function ModelIA() {
 
     try {
       const result = await fetchModel(formData)
-      console.log("imagen:" + result);
+      console.log(JSON.stringify(result));
       toast.success(`Clase: ${result.class}, Confianza: ${result.confidence}`);
       
     } catch (error) {
