@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
 import Diagnoses from "./pages/clinic/Diagnoses";
 import NewConsultation from "./pages/clinic/NewConsultation";
+import ChatBot from "./pages/ChatBot";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -67,6 +68,7 @@ export function Router() {
                 <Route path="/dashboard/org/:id/appointments" element={<MedicalAppointments />} />
                 <Route path="/dashboard/org/:id/attention-hours" element={<Schedules />} />
 
+                <Route path="/dashboard/org/:id/chat-bot" element={<ChatBot />} />
                 <Route path="/dashboard/org/:id/ia-model" element={<ModelIA />} />
                 <Route path="/dashboard/org/:id/admin" element={<Admin />} />
             </Route>

@@ -1,0 +1,5 @@
+¡Bienvenido al SkinCare Assistant! Para usar el software, 
+inicia sesión, selecciona un paciente, sube una imagen de
+ la piel en la sección de Consultas, y 
+ revisa el diagnóstico generado. Pregúntame cómo usar 
+ cualquier sección o sobre afecciones de la piel.

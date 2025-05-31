@@ -1,5 +1,6 @@
-import { IconAdmin, IconDate, IconHome, IconHospital, IconIA, IconUsers } from "@/assets/icons";
+import { IconAdmin, IconChatBot, IconDate, IconHome, IconHospital, IconIA, IconUsers } from "@/assets/icons";
 import { useOrganization } from "@/hooks/organizationContex";
+import ChatBot from "@/pages/ChatBot";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -39,6 +40,11 @@ export default function Sidebar() {
         { name: "Medical Appointments", path: `/dashboard/org/${id}/appointments` },
         { name: "Schedules", path: `/dashboard/org/${id}/attention-hours` },
       ],
+    },
+    {
+      name: "Chat Bot",
+      path: `/dashboard/org/${id}/chat-bot`,
+      icon: <IconChatBot />,
     },
     {
       name: "IA Model",
