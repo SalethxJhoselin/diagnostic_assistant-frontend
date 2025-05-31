@@ -40,9 +40,9 @@ export default function ChatBot() {
     }, [messages]);
 
     return (
-        <div className="max-w-3xl mx-auto mt-6 p-6 backdrop-blur-md rounded-xl shadow-lg">
+        <div className="max-w-3xl mx-auto md:mt-6 p-6 backdrop-blur-md rounded-xl shadow-lg">
             <h2 className="text-xl font-bold mb-4 text-center text-primary">SkinCare Assistant</h2>
-            <div className="p-4 h-[480px] overflow-y-auto space-y-2 rounded-lg">
+            <div className="p-4 sm:h-[480px] h-[470px] overflow-y-auto space-y-2 rounded-lg">
                 {messages.map((msg, idx) => (
                     <div
                         key={idx}
@@ -63,13 +63,14 @@ export default function ChatBot() {
                 ))}
                 <div ref={messagesEndRef} />
             </div>
-            <form onSubmit={handleSubmit} className="mt-4 flex p-2">
+            <form onSubmit={handleSubmit} className="mt-4 flex px-2">
                 <input
                     type="text"
                     placeholder="Pregunta sobre el software o dermatología..."
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="flex-grow px-4 py-2 border rounded-full outline-none shadow-inner"
+                    className="flex-grow px-4 py-2 border rounded-full
+                        outline-none shadow-inner max-sm:text-[11px]"
                 />
                 <Button type="submit" className="ml-2 bg-primary text-white rounded-full px-4">
                     Enviar
