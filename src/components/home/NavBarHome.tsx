@@ -53,7 +53,7 @@ export default function Navbar() {
                     <ToggleThemeButton />
                     <SignedOut>
                         <Button>
-                            <SignInButton />
+                            <SignInButton forceRedirectUrl={'/dashboard/organizations'} mode="redirect" />
                         </Button>
                     </SignedOut>
                     <SignedIn>
