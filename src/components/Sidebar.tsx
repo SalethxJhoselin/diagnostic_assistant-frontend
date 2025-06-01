@@ -1,4 +1,4 @@
-import { IconAdmin, IconDate, IconHome, IconHospital, IconIA, IconUsers } from "@/assets/icons";
+import { IconAdmin, IconChatBot, IconDate, IconHome, IconHospital, IconIA, IconUsers } from "@/assets/icons";
 import { useOrganization } from "@/hooks/organizationContex";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -41,6 +41,11 @@ export default function Sidebar() {
       ],
     },
     {
+      name: "Chat Bot",
+      path: `/dashboard/org/${id}/chat-bot`,
+      icon: <IconChatBot />,
+    },
+    {
       name: "IA Model",
       path: `/dashboard/org/${id}/ia-model`,
       icon: <IconIA />,
@@ -76,8 +81,8 @@ export default function Sidebar() {
         className={`
           w-[260px] min-h-full text-[12px] transition-transform duration-300 ease-in-out
           ${isMobile
-                  ? "fixed z-20 bg-background p-4 h-full overflow-y-auto"
-                  : "sticky top-[3.5rem] h-[calc(100vh-3.5rem)] border-r p-4 overflow-y-auto"}
+                  ? "fixed z-20 bg-background border-r  p-4 h-full overflow-y-auto"
+                  : "sticky top-[3.5rem] p-4 border-r  overflow-y-auto"}
           ${isMobile && !openMenu ? "-translate-x-full" : "translate-x-0"}
         `}
       >
