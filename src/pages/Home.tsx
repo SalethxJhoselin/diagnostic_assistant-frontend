@@ -55,7 +55,7 @@ export default function Home() {
               Start your organization
             </div>
           ) : (
-            <SignInButton mode="modal">
+            <SignInButton forceRedirectUrl={'/dashboard/organizations'} mode="modal">
               <div className="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-full font-medium hover:bg-primary/90 transition cursor-pointer">
                 Start your organization
               </div>
