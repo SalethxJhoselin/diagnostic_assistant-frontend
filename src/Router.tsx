@@ -41,7 +41,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     }
     if (!isSignedIn) {
         return <Navigate to="/" replace />;
-    }
+    } 
     return <>{children}</>;
 }
 
