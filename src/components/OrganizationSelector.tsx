@@ -32,15 +32,15 @@ export function OrganizationSelector() {
               </span>
             ))}
           </div>
-          <Link 
+          <Link
             to={'/dashboard/organizations'}
             className="mt-1 border-b pb-2 hover:bg-secondary 
             dark:hover:bg-zinc-700 px-2 rounded-md">
             <span>All organizatios</span>
           </Link>
           <button className="flex items-center gap-x-1 hover:bg-secondary 
-          dark:hover:bg-zinc-700 px-1 rounded-md">
-            <IconPlus/>
+          dark:hover:bg-zinc-700 px-1 rounded-md pt-1">
+            <IconPlus d={12} />
             <span className="">
               new Organization
             </span>
