@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 
 interface ModalCreateTreatProps {
     setOpenModal: (open: boolean) => void;
@@ -18,6 +19,9 @@ export default function ModalCreateTreat(
     const [instructions, setInstructions] = useState("");
     const [duration, setDuration] = useState("");
     const durationOptions = ["3 days", "5 days", "1 week", "2 weeks", "1 month"];
+    const [frequencyValue, setFrequencyValue] = useState(1)
+    const [frequencyUnit, setFrequencyUnit] = useState("")
+    const frequencyUnitOptions = ["daily", "weekly", "monthly"]
     const maxInstructionsLength = 500;
 
 
@@ -31,7 +35,9 @@ export default function ModalCreateTreat(
             description,
             duration,
             instructions,
-            organizationId: organization.id
+            organizationId: organization.id,
+            frequencyValue,
+            frequencyUnit
         };
 
         const createPromise = new Promise(async (resolve, reject) => {
@@ -88,16 +94,55 @@ export default function ModalCreateTreat(
                         </div>
                         <div>
                             <label className="font-semibold">Duración</label>
-                            <select
-                                className="w-full px-2 py-1 border rounded-md"
-                                value={duration}
-                                onChange={(e) => setDuration(e.target.value)}
-                            >
-                                <option value="">Seleccione una duración</option>
-                                {durationOptions.map(option => (
-                                    <option key={option} value={option}>{option}</option>
-                                ))}
-                            </select>
+                            <Select value={duration} onValueChange={(val) => setDuration(val)}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Seleccione una duracion" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Duracion</SelectLabel>
+                                            {
+                                                durationOptions.map((item, index) => (
+                                                    <SelectItem key={index} value={item}>
+                                                        {item}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                        </div>
+                        <div className="flex justify-between">
+                            <div className="flex flex-col w-[250px] gap-2">
+                                <label className="font-semibold">Frecuencia del tratamiento</label>
+                                <Select value={frequencyUnit} onValueChange={(val) => setFrequencyUnit(val)}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Seleccione una frecuencia" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Frecuencia</SelectLabel>
+                                            {
+                                                frequencyUnitOptions.map((item, index) => (
+                                                    <SelectItem key={index} value={item}>
+                                                        {item}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex flex-col w-[200px] gap-2">
+                                <label className="font-semibold">Intervalos</label>
+                                <input
+                                    type="number"
+                                    className="w-full px-2 py-1 border rounded-md outline-none "
+                                    placeholder="Descripción del tratamiento"
+                                    value={frequencyValue}
+                                    onChange={(e) => setFrequencyValue(Number(e.target.value))}
+                                />
+                            </div>
                         </div>
                         <div>
                             <label className="font-semibold">Instrucciones</label>
@@ -121,7 +166,7 @@ export default function ModalCreateTreat(
                 <div className="border-t px-6 py-3 flex items-center justify-between">
                     <button
                         className="border rounded-md px-4 py-1 text-[14px]
-                        cursor-pointer transition-all font-semibold hover:bg-secondary"                        
+                        cursor-pointer transition-all font-semibold hover:bg-secondary"
                         onClick={() => setOpenModal(false)}
                     >
                         Cancelar
