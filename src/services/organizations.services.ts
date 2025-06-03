@@ -32,6 +32,30 @@ export const fetchOrganizationsByUser = async (email: string, isActive:boolean) 
   return result
 };
 
+export const fetchOrganizationsMembershipsByUser = async (userId: string) => {
+  const response = await fetch(`${apilocal}/organizations-members/user/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const result = await response.json();
+  return result;
+};
+
+export const fetchOrganizationsMembershipsByUserEmail = async (email: string) => {
+  const response = await fetch(`${apilocal}/organizations-members/user/email/${email}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const result = await response.json();
+  return result;
+};
+
 export const fetchOrgById = async (id:string) => {
   const response = await fetch(`${apilocal}/organizations/${id}`, {
     method: "GET",

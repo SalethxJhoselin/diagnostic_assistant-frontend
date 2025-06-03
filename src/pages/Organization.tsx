@@ -6,21 +6,33 @@ import {
 } from "@/components/ui/select";
 import { useOrganization } from "@/hooks/organizationContex";
 import type { Organization, Plan } from "@/lib/interfaces";
-import { fetchFindAllPlans, fetchOrganizationsByUser, fetchOrgById, fetchOrgCreate, fetchSubsCreate, type CreateOrg, type CreateSubs } from "@/services/organizations.services";
+import { fetchFindAllPlans, fetchOrganizationsByUser, fetchOrgById, fetchOrgCreate, fetchSubsCreate, fetchOrganizationsMembershipsByUserEmail, type CreateOrg, type CreateSubs } from "@/services/organizations.services";
 import { useUser } from "@clerk/clerk-react";
+import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+interface OrganizationMembership {
+    id: string;
+    role: string;
+    organizationId: string;
+    userId: string;
+    organization: Organization;
+}
 
 export default function Organizations() {
     const { handleSetOrganization } = useOrganization();
     const [organizations, setOrganizations] = useState<Organization[]>();
     const [filteredOrganizations, setFilteredOrganizations] = useState<Organization[]>();
+    const [memberOrganizations, setMemberOrganizations] = useState<OrganizationMembership[]>();
+    const [filteredMemberOrganizations, setFilteredMemberOrganizations] = useState<OrganizationMembership[]>();
     const [plans, setPlans] = useState<Plan[]>();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [selectedPlan, setSelectedPlan] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [memberSearchQuery, setMemberSearchQuery] = useState("");
     const navigate = useNavigate();
 
     const { user } = useUser();
@@ -29,12 +41,21 @@ export default function Organizations() {
         const fetchData = async () => {
             try {
                 if (user) {
-                    const result = await fetchOrganizationsByUser(
+                    // Obtener organizaciones donde es host
+                    const hostResult = await fetchOrganizationsByUser(
                         user.primaryEmailAddress?.emailAddress || '',
                         true
                     );
-                    setOrganizations(result);
-                    setFilteredOrganizations(result);
+                    setOrganizations(hostResult);
+                    setFilteredOrganizations(hostResult);
+
+                    // Obtener organizaciones donde es miembro
+                    const memberResult = await fetchOrganizationsMembershipsByUserEmail( user.primaryEmailAddress?.emailAddress || '',
+                        true);
+                    console.log("TEst"+user.id);
+                    console.log(user);
+                    setMemberOrganizations(memberResult);
+                    setFilteredMemberOrganizations(memberResult);
                 }
             } catch (error) {
                 toast("Error al recuperar tus organizaciones");
@@ -52,6 +73,16 @@ export default function Organizations() {
             setFilteredOrganizations(filtered);
         }
     }, [searchQuery, organizations]);
+
+    useEffect(() => {
+        if (memberOrganizations) {
+            const filtered = memberOrganizations.filter(membership =>
+                membership.organization.name.toLowerCase().includes(memberSearchQuery.toLowerCase()) ||
+                membership.organization.subscriptions?.[0]?.plan?.name.toLowerCase().includes(memberSearchQuery.toLowerCase())
+            );
+            setFilteredMemberOrganizations(filtered);
+        }
+    }, [memberSearchQuery, memberOrganizations]);
 
     const handleClickOrganization = (organization: Organization) => {
         handleSetOrganization(organization);
@@ -88,6 +119,7 @@ export default function Organizations() {
     return (
         <>
             <div className="flex flex-col xl:mx-46 md:mx-25 sm:mx-20 mx-6">
+                {/* Sección de Organizaciones Propias */}
                 <section className="flex flex-col sm:mt-10 mt-4 sm:gap-y-8 gap-y-6">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-primary 
                         to-primary/60 bg-clip-text text-transparent py-2">
@@ -144,6 +176,69 @@ export default function Organizations() {
                         </article>
                     ))}
                     {filteredOrganizations?.length === 0 && (
+                        <div className="col-span-full text-center py-12">
+                            <p className="text-gray-600 dark:text-gray-400 text-lg">
+                                No se encontraron organizaciones que coincidan con tu búsqueda
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Sección de Organizaciones como Miembro */}
+                <section className="flex flex-col sm:mt-10 mt-4 sm:gap-y-8 gap-y-6">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-primary 
+                        to-primary/60 bg-clip-text text-transparent py-2">
+                        Organizaciones como Miembro
+                    </h1>
+                    <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4">
+                        <div className="flex items-center relative group">
+                            <div className="absolute pl-4 text-zinc-600 dark:text-zinc-200">
+                                <IconSearch />
+                            </div>
+                            <input
+                                className="w-full sm:w-80 border rounded-lg pl-12 py-0.5 bg-[var(--input-soft)]"
+                                type="search"
+                                placeholder="Buscar por nombre o plan..."
+                                value={memberSearchQuery}
+                                onChange={(e) => setMemberSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                <div className="flex flex-wrap gap-6 py-10">
+                    {filteredMemberOrganizations?.map((membership) => (
+                        <article
+                            onClick={() => handleClickOrganization(membership.organization)}
+                            key={membership.id}
+                            className="sm:w-[370px] w-full px-5 py-4 gap-4 items-center group 
+                                  bg-secondary backdrop-blur-sm rounded-xl
+                                    border border-gray-400/20 dark:border-gray-700/50 hover:border-primary/50
+                                    transition-all duration-300 cursor-pointer hover:shadow-xl hover:-translate-y-1"
+                        >
+                            <div className="flex items-start gap-3">
+                                <div className="bg-primary/10 dark:bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/20
+                                 dark:group-hover:bg-primary/30 transition-colors duration-300">
+                                    <IconBoxes />
+                                </div>
+
+                                <div className="">
+                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                        {membership.organization.name}
+                                    </h2>
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            {membership.organization.subscriptions?.[0]?.plan?.name || 'Sin plan'}
+                                        </p>
+                                        <p className="text-xs text-primary">
+                                            Rol: {membership.role}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
+                    {filteredMemberOrganizations?.length === 0 && (
                         <div className="col-span-full text-center py-12">
                             <p className="text-gray-600 dark:text-gray-400 text-lg">
                                 No se encontraron organizaciones que coincidan con tu búsqueda
