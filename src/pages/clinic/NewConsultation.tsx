@@ -13,6 +13,8 @@ import {
     SelectLabel, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { fetchModel } from "@/services/model";
+import ModalCreateDiag from "@/components/diagnoses/ModalCreateDiagnoses";
+import ModalCreateTreat from "@/components/treatments/ModalCreateTreatments";
 
 export default function NewConsultation() {
     const [patients, setPatients] = useState<GetPatient[]>([]);
@@ -29,7 +31,10 @@ export default function NewConsultation() {
     const [selectedTreatmentIds, setSelectedTreatmentIds] = useState<string[]>([]);
     const [isProcessingImage, setIsProcessingImage] = useState(false);
 
-    const { organization } = useOrganization();
+    const [openModalDiag, setOpenModalDiag] = useState(false)
+    const [openModalTreat, setOpenModalTreat] = useState(false)
+
+    const { organization,user } = useOrganization();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -56,7 +61,7 @@ export default function NewConsultation() {
             if (!selectedPatientId) return;
             try {
                 //const appointmentsData = await fetchAppointmentsByPatient(selectedPatientId);
-                //setAppointments(appointmentsData);
+                setAppointments([]);
             } catch (error) {
                 console.error("Error fetching appointments:", error);
             }
@@ -70,7 +75,13 @@ export default function NewConsultation() {
         setImageFile(file);
         setIsProcessingImage(true);
 
-        gsap.to(".scanner-line", { y: "100%", duration: 2, repeat: -1, ease: "none" });
+        gsap.to(".scanner-line", {
+            y: "100%",
+            duration: 1.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
 
         try {
             const formData = new FormData();
@@ -100,7 +111,7 @@ export default function NewConsultation() {
             observaciones: observaciones,
             organizationId: organization.id,
             patientId: selectedPatientId,
-            userId: "cmaqbni8b0000i4h4nlcb0t6c",
+            userId: user?.id ||'' ,
         };
 
         try {
@@ -197,17 +208,21 @@ export default function NewConsultation() {
                         onChange={handleImageUpload}
                     />
                     {imageFile && (
-                        <div className="relative mt-4">
+                        <div className="relative mt-4 w-48 h-48 mx-auto border rounded-md overflow-hidden flex items-center justify-center">
                             <img
                                 src={URL.createObjectURL(imageFile)}
                                 alt="Uploaded"
-                                className="max-w-full h-auto"
+                                className="w-full h-full object-contain"
                             />
                             {isProcessingImage && (
-                                <div className="scanner-line absolute top-0 left-0 w-full h-3 bg-green-500/50 shadow-lg"></div>
+                                <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                                    <div className="scanner-line w-full h-8 bg-green-500/50" />
+                                </div>
                             )}
+
                         </div>
                     )}
+
                     {aiDiagnosis && (
                         <p className="mt-2 text-green-600">
                             Diagnóstico AI: {aiDiagnosis.condition} - {aiDiagnosis.confidence}% confianza
@@ -215,7 +230,7 @@ export default function NewConsultation() {
                     )}
                 </div>
 
-                <div>
+                <div className="bg-secondary p-4 rounded-md">
                     <label className="font-semibold">Diagnósticos</label>
                     <div className="border rounded-md p-2 flex flex-col gap-2">
                         {diagnoses.map((diagnosis) => (
@@ -235,13 +250,26 @@ export default function NewConsultation() {
                             </label>
                         ))}
                     </div>
-                    <Link to="/diagnoses/new" className="text-blue-500 underline mt-2 inline-block">
-                        Crear nuevo diagnóstico
-                    </Link>
+                    <section className="mt-2 flex items-center gap-x-2">
+                        <label className="">Puede agregar un nuevo diagnostico si lo desea</label>
+                        <Button
+                            className="text-white cursor-pointer animate-fade-in-left"
+                            onClick={() => setOpenModalDiag(true)}
+                        >
+                            Nuevo Diagnostico
+                        </Button>
+                        {openModalDiag &&
+                            <ModalCreateDiag
+                                setDiagnoses={setDiagnoses}
+                                setFilteredDiagnoses={()=>{}}
+                                setOpenModal={setOpenModalDiag}
+                            />
+                        }
+                    </section>
                 </div>
 
 
-                <div>
+                <div className="bg-secondary p-4 rounded-md">
                     <label className="font-semibold">Tratamientos</label>
                     <div className="border rounded-md p-2 flex flex-col gap-2">
                         {treatments.map((treatment) => (
@@ -261,9 +289,22 @@ export default function NewConsultation() {
                             </label>
                         ))}
                     </div>
-                    <Link to="/treatments/new" className="text-blue-500 underline mt-2 inline-block">
-                        Crear nuevo tratamiento
-                    </Link>
+                    <section className="mt-2 flex items-center gap-x-2">
+                        <label className="">Puede agregar un nuevo tratamiento si lo desea</label>
+                        <Button
+                            className="hover:bg-primary/90 text-white cursor-pointer animate-fade-in-left"
+                            onClick={() => setOpenModalTreat(true)}
+                        >
+                            Nuevo Tratamiento
+                        </Button>
+                        {openModalTreat &&
+                            <ModalCreateTreat
+                                setTreatments={setTreatments}
+                                setFilteredTreatments={()=>{}}
+                                setOpenModal={setOpenModalTreat}
+                            />
+                        }
+                    </section>
                 </div>
 
 
@@ -271,7 +312,7 @@ export default function NewConsultation() {
                     <Link to={`/dashboard/org/${organization?.id}/clinic/consultations`}>
                         <Button variant="outline">Cancelar</Button>
                     </Link>
-                    <Button onClick={handleSaveConsultation}>Guardar Consulta</Button>
+                    <Button onClick={handleSaveConsultation} className="text-white">Guardar Consulta</Button>
                 </div>
             </section>
         </div>
