@@ -1,10 +1,13 @@
 import type { Organization } from "@/lib/interfaces";
+import type { User } from "@/services/usuarioServices";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type OrganizationContextType = {
+  user: User | undefined
   organization: Organization | undefined;
   openMenu: boolean
   setOrganization: React.Dispatch<React.SetStateAction<Organization | undefined>>;
+  setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
   setOpenMenu: React.Dispatch<React.SetStateAction<boolean>>
   handleSetOrganization: (org: Organization) => void;
 };
@@ -14,6 +17,7 @@ export const OrganizationContext = createContext<OrganizationContextType | undef
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
   const [organization, setOrganization] = useState<Organization | undefined>(undefined);
   const [openMenu, setOpenMenu] = useState(false)
+  const [user,setUser] = useState<User | undefined>(undefined)
 
 
   useEffect(() => {
@@ -35,7 +39,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
   return (
     <OrganizationContext.Provider value={{ organization, setOrganization, handleSetOrganization,openMenu,
-      setOpenMenu
+      setOpenMenu,user,setUser
      }}>
       {children}
     </OrganizationContext.Provider>
