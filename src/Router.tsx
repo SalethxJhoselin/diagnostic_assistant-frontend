@@ -19,6 +19,7 @@ import Diagnoses from "./pages/clinic/Diagnoses";
 import NewConsultation from "./pages/clinic/NewConsultation";
 import IAModel from "./pages/IAModel";
 import ChatBot from "./pages/ChatBot";
+import PatientsProfile from "./pages/clinic/PatientsProfile";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -61,6 +62,7 @@ export function Router() {
                 <Route path="/dashboard/org/:id/team" element={<TeamOrganization />} />
 
                 <Route path="/dashboard/org/:id/clinic/patients" element={<Patients />} />
+                <Route path="/dashboard/org/:id/clinic/patientsProfile" element={<PatientsProfile />} />
                 <Route path="/dashboard/org/:id/clinic/consultations" element={<Consultations />} />
                 <Route path="/dashboard/org/:id/clinic/consultations/new" element={<NewConsultation />} />
                 <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnoses />} />

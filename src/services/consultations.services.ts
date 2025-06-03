@@ -47,6 +47,36 @@ export interface GetConsultation {
   user: User;
 }
 
+export interface PatientHistory {
+    patient: {
+        id: string;
+        name: string;
+        aPaternal: string;
+        aMaternal: string;
+        ci: number;
+        sexo: string;
+        email: string;
+        phone: number;
+        birthDate: string;
+    };
+    consultations: Array<{
+        id: string;
+        motivo: string;
+        observaciones: string;
+        consultationDate: string;
+        treatments: Array<{
+            treatment: GetTreatments;
+        }>;
+        diagnoses: Array<{
+            diagnosis: GetDiagnoses;
+        }>;
+        user: {
+            id: string;
+            email: string;
+        };
+    }>;
+}
+
 export const fetchCreateConsultation = async (data: CreateConsultation) => {
     const response = await fetch(`${apilocal}/consultations`, {
         method: "POST",
@@ -139,6 +169,36 @@ export const fetchUpdateConsultation = async (data:GetConsultation) => {
 
     if (!response.ok) {
         throw new Error("Error updating consultations");
+    }
+
+    return await response.json();
+}
+
+export const fetchConsultationsByPatient = async (patientId: string) => {
+    const response = await fetch(`${apilocal}/consultations/patient/${patientId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Error fetching patient consultations");
+    }
+
+    return await response.json();
+}
+
+export const fetchPatientHistory = async (patientId: string): Promise<PatientHistory> => {
+    const response = await fetch(`${apilocal}/consultations/patient/${patientId}/history`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Error fetching patient history");
     }
 
     return await response.json();

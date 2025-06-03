@@ -25,6 +25,7 @@ export default function Consultations() {
             setIsLoading(true);
             try {
                 const consultations = await fetchConsulByOrg(organization.id);
+                console.log(consultations);
                 setConsultations(consultations);
                 setFilteredConsultations(consultations);
             } catch (error) {

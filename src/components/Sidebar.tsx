@@ -27,6 +27,7 @@ export default function Sidebar() {
       icon: <IconHospital />,
       children: [
         { name: "Patients", path: `/dashboard/org/${id}/clinic/patients` },
+        { name: "PatientsProfile", path: `/dashboard/org/${id}/clinic/patientsProfile` },
         { name: "Consultations", path: `/dashboard/org/${id}/clinic/consultations` },
         { name: "Diagnoses", path: `/dashboard/org/${id}/clinic/diagnoses` },
         { name: "Treatments", path: `/dashboard/org/${id}/clinic/treatments` },
