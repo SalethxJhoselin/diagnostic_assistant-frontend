@@ -9,7 +9,7 @@ import {
   type OrganizationMember,
 } from "@/services/organizations-members";
 
-import AddMemberModal from "@/components/team-members/AddMemberModal"; // ajusta ruta si es necesario
+import AddMemberModal from "@/components/AddMemberModal"; // ajusta ruta si es necesario
 import { IconSearch } from "@/assets/icons";
 import ModalConfirmation from "@/components/ModalConfirmation";
 import type { Organization } from "@/lib/interfaces";
@@ -235,6 +235,7 @@ export default function TeamOrganization() {
 
       {isAddModalOpen && organization && (
         <AddMemberModal
+          isOpen={isAddModalOpen}
           organizationId={organization.id}
           onClose={() => setIsAddModalOpen(false)}
           onCreated={fetchMembers}

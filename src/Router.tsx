@@ -20,7 +20,8 @@ import NewConsultation from "./pages/clinic/NewConsultation";
 import IAModel from "./pages/IAModel";
 import ChatBot from "./pages/ChatBot";
 import PatientsProfile from "./pages/clinic/PatientsProfile";
-
+import Plans from "./pages/Plans";
+import Payment from "./pages/Payment";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isSignedIn, isLoaded } = useAuth();
@@ -51,13 +52,25 @@ export function Router() {
         <Routes>
             <Route path="/" element={<Home />} />
 
+            {/* Rutas protegidas sin Layout */}
+            <Route path="/dashboard/plans" element={
+                <ProtectedRoute>
+                    <Plans />
+                </ProtectedRoute>
+            } />
+            <Route path="/dashboard/payment" element={
+                <ProtectedRoute>
+                    <Payment />
+                </ProtectedRoute>
+            } />
+
+            {/* Rutas con Layout */}
             <Route element={
                 <ProtectedRoute>
                     <Layout />
                 </ProtectedRoute>
             }>
                 <Route path="/dashboard/organizations" element={<Organizations />} />
-
                 <Route path="/dashboard/org/:id" element={<HomeOrganization />} />
                 <Route path="/dashboard/org/:id/team" element={<TeamOrganization />} />
 

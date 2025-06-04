@@ -94,7 +94,17 @@ export const fetchSubsCreate = async (createSubs: CreateSubs) => {
   return result
 };
 
+export const fetchDeleteOrganization = async (organizationId: string) => {
+  const response = await fetch(`${apilocal}/organizations/${organizationId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
+  const result = await response.json();
+  return result;
+};
 
 export const fetchFindAllPlans = async ()=>{
   const response = await fetch(`${apilocal}/plans`, {
@@ -107,3 +117,18 @@ export const fetchFindAllPlans = async ()=>{
   const result = await response.json();
   return result
 }
+
+export const fetchUpdateOrganization = async (organizationId: string, updatedData: Partial<CreateOrg>) => {
+  const response = await fetch(`${apilocal}/organizations/${organizationId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  });
+
+  const result = await response.json();
+  return result;
+};
+
+

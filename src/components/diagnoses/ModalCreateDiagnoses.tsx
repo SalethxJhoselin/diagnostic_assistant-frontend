@@ -3,21 +3,22 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
 import { fetchCreateDiagnoses, type CreateDiagnoses, type GetDiagnoses } from "@/services/diagnoses.services";
+import BaseModal from "@/components/ui/BaseModal";
 
 interface ModalCreateDiagProps {
-    setOpenModal: (open: boolean) => void;
+    isOpen: boolean;
+    onClose: () => void;
     setDiagnoses: React.Dispatch<React.SetStateAction<GetDiagnoses[]>>;
     setFilteredDiagnoses: React.Dispatch<React.SetStateAction<GetDiagnoses[]>>;
 }
 
 export default function ModalCreateDiag(
-    { setOpenModal, setDiagnoses, setFilteredDiagnoses }: ModalCreateDiagProps
+    { isOpen, onClose, setDiagnoses, setFilteredDiagnoses }: ModalCreateDiagProps
 ) {
     const { organization } = useOrganization();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const maxDescriptionsLength = 500;
-
 
     const handleCreateDiagnoses = async () => {
         if (!organization) return;
@@ -50,7 +51,7 @@ export default function ModalCreateDiag(
 
         try {
             await createPromise;
-            setOpenModal(false);
+            onClose();
             setDescription("");
             setName("");
         } catch (error) {
@@ -58,65 +59,54 @@ export default function ModalCreateDiag(
         }
     };
 
+    const modalFooter = (
+        <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={onClose}>
+                Cancelar
+            </Button>
+            <Button onClick={handleCreateDiagnoses}>
+                Guardar diagnostico
+            </Button>
+        </div>
+    );
+
     return (
-        <div
-            className="fixed inset-0 z-50 bg-black/50 bg-opacity-50 flex items-center justify-center"
-            onClick={() => setOpenModal(false)}
+        <BaseModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Crear diagnostico"
+            footer={modalFooter}
+            size="lg"
         >
-            <div
-                className="bg-white dark:bg-secondary rounded-md shadow-xl w-full sm:w-xl mx-2"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex justify-between items-center border-b px-6 py-3">
-                    <h2 className="text-md font-semibold">Crear diagnostico</h2>
+            <div className="flex flex-col gap-4">
+                <div>
+                    <label className="font-semibold">Nombre</label>
+                    <input
+                        type="text"
+                        className="w-full px-2 py-1 border rounded-md"
+                        placeholder="Descripción del diagnostico"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
                 </div>
-                <section className="flex flex-col px-6 py-3">
-                    <div className="flex flex-col gap-4 pb-4">
-                        <div>
-                            <label className="font-semibold">Nombre</label>
-                            <input
-                                type="text"
-                                className="w-full px-2 py-1 border rounded-md"
-                                placeholder="Descripción del diagnostico"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="font-semibold">Descripcion</label>
-                            <textarea
-                                className="w-full px-2 py-1 border rounded-md"
-                                rows={3}
-                                placeholder="Ej: No comer antes de..."
-                                value={description}
-                                onChange={(e) => {
-                                    if (e.target.value.length <= maxDescriptionsLength) {
-                                        setDescription(e.target.value);
-                                    }
-                                }}
-                            />
-                            <p className="text-sm text-gray-500">
-                                {description.length}/{maxDescriptionsLength} caracteres
-                            </p>
-                        </div>
-                    </div>
-                </section>
-                <div className="border-t px-6 py-3 flex items-center justify-between">
-                    <button
-                        className="border rounded-md px-4 py-1 text-[14px]
-                        cursor-pointer transition-all font-semibold hover:bg-secondary"                        
-                        onClick={() => setOpenModal(false)}
-                    >
-                        Cancelar
-                    </button>
-                    <Button
-                        className="text-white cursor-pointer"
-                        onClick={handleCreateDiagnoses}
-                    >
-                        Guardar diagnostico
-                    </Button>
+                <div>
+                    <label className="font-semibold">Descripcion</label>
+                    <textarea
+                        className="w-full px-2 py-1 border rounded-md"
+                        rows={3}
+                        placeholder="Ej: No comer antes de..."
+                        value={description}
+                        onChange={(e) => {
+                            if (e.target.value.length <= maxDescriptionsLength) {
+                                setDescription(e.target.value);
+                            }
+                        }}
+                    />
+                    <p className="text-sm text-gray-500">
+                        {description.length}/{maxDescriptionsLength} caracteres
+                    </p>
                 </div>
             </div>
-        </div>
-    )
+        </BaseModal>
+    );
 }

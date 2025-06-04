@@ -10,7 +10,7 @@ import { fetchFindAllPlans, fetchOrganizationsByUser, fetchOrgById, fetchOrgCrea
 import { useUser } from "@clerk/clerk-react";
 import { User } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface OrganizationMembership {
@@ -30,10 +30,13 @@ export default function Organizations() {
     const [plans, setPlans] = useState<Plan[]>();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
-    const [selectedPlan, setSelectedPlan] = useState("");
+    //const [selectedPlan, setSelectedPlan] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [memberSearchQuery, setMemberSearchQuery] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+    const selectedPlan = location.state?.selectedPlan;
+    const orgName = location.state?.orgName;
 
     const { user } = useUser();
 
@@ -50,8 +53,9 @@ export default function Organizations() {
                     setFilteredOrganizations(hostResult);
 
                     // Obtener organizaciones donde es miembro
-                    const memberResult = await fetchOrganizationsMembershipsByUserEmail( user.primaryEmailAddress?.emailAddress || '',
-                        true);
+                    const memberResult = await fetchOrganizationsMembershipsByUserEmail(
+                        user.primaryEmailAddress?.emailAddress || ''
+                    );
                     console.log("TEst"+user.id);
                     console.log(user);
                     setMemberOrganizations(memberResult);
@@ -89,19 +93,23 @@ export default function Organizations() {
         navigate(`/dashboard/org/${organization.id}`);
     };
 
-    const handleOpenDialog = async () => {
-        try {
-            const result = await fetchFindAllPlans();
-            setPlans(result);
-            setOpen(true);
-        } catch (error) {
-            toast('Error al cargar los planes');
+    const handleOpenDialog = () => {
+        if (!selectedPlan || !orgName) {
+            navigate("/dashboard/plans");
+            return;
         }
+        setName(orgName);
+        setOpen(true);
     };
 
     const handleCreateOrganization = async () => {
+        if (!selectedPlan || !orgName) {
+            navigate("/dashboard/plans");
+            return;
+        }
+
         const newOrg: CreateOrg = {
-            name: name,
+            name: orgName,
             hostUser: user?.primaryEmailAddress?.emailAddress || ''
         }
         const resultOrg: Organization = await fetchOrgCreate(newOrg)
@@ -113,7 +121,7 @@ export default function Organizations() {
         const newOrgContex: Organization = await fetchOrgById(resultOrg.id)
         handleSetOrganization(newOrgContex)
         navigate(`/dashboard/org/${resultOrg.id}`)
-        toast.success(`Organización creada exitosamente`);
+        toast.success(`Organización ${orgName} creada exitosamente`);
     };
 
     return (
@@ -257,45 +265,21 @@ export default function Organizations() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-center border-b px-6 py-3">
-                                <h2 className="text-md font-semibold">Create a new organization</h2>
+                                <h2 className="text-md font-semibold">Crear una nueva organización</h2>
                             </div>
                             <section className="flex flex-col px-6 py-3">
                                 <div className="flex justify-between pb-4">
-                                    <h2 className="font-semibold">Name</h2>
+                                    <h2 className="font-semibold">Nombre</h2>
                                     <div className="flex flex-col gap-2">
                                         <input
                                             className="w-full sm:w-sm px-2 py-1 border rounded-md"
                                             type="text"
-                                            placeholder="name to organization"
+                                            placeholder="Nombre de la organización"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                         />
                                         <span className="text-sm">
-                                            What's the name of your company or team?
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-between pb-4">
-                                    <h2 className="font-semibold">Plan</h2>
-                                    <div className="flex flex-col gap-2">
-                                        <Select value={selectedPlan} onValueChange={(val) => setSelectedPlan(val)}>
-                                            <SelectTrigger className="sm:w-[385px] w-full">
-                                                <SelectValue placeholder="Select a plan" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Plans</SelectLabel>
-                                                    {plans?.map((plan) => (
-                                                        <SelectItem key={plan.id} value={plan.id}>
-                                                            {`${plan.name} - $${plan.price}`}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                        <span className="text-sm">
-                                            The Plan applies to your new organization.
+                                            ¿Cuál es el nombre de tu empresa o equipo?
                                         </span>
                                     </div>
                                 </div>
@@ -311,7 +295,7 @@ export default function Organizations() {
                                     className="text-white cursor-pointer"
                                     onClick={handleCreateOrganization}
                                 >
-                                    Create Organization
+                                    Crear Organización
                                 </Button>
                             </div>
                         </div>
