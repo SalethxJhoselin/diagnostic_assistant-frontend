@@ -239,14 +239,16 @@ export default function Treatments() {
             )}
             {openModal && (
                 <ModalCreateTreat
-                    setOpenModal={setOpenModal}
+                    isOpen={openModal}
+                    onClose={() => setOpenModal(false)}
                     setTreatments={setTreatments}
                     setFilteredTreatments={setFilteredTreatments}
                 />
             )}
             {editTreatment && (
                 <ModalEditTreat
-                    setEditTreatment={setEditTreatment}
+                    isOpen={!!editTreatment}
+                    onClose={() => setEditTreatment(null)}
                     setTreatments={setTreatments}
                     setFilteredTreatments={setFilteredTreatments}
                     editTreatment={editTreatment}

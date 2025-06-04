@@ -2,13 +2,13 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-reac
 import { Button } from "./ui/button";
 import SyncUserWithBackend from "@/hooks/SyncUserWithBackend";
 import { ToggleThemeButton } from "./ToggleThemeButton";
-import { IconLogo, IconMenu } from "@/assets/icons";
+import { IconLogo, IconMenu, IconChevronLeft } from "@/assets/icons";
 import { useOrganization } from "@/hooks/organizationContex";
 import { Link, useLocation } from "react-router-dom";
 import { OrganizationSelector } from "./OrganizationSelector";
 
 export default function Header() {
-    const { organization,setOpenMenu,openMenu } = useOrganization()
+    const { organization, setOpenMenu, openMenu } = useOrganization()
 
     const location = useLocation()
     const hideOrganization = location.pathname.startsWith("/dashboard/organizations");
@@ -20,6 +20,12 @@ export default function Header() {
                 <Link to={'/'}>
                     <IconLogo />
                 </Link>
+                {!hideOrganization && (
+                    <Link to="/dashboard/organizations" className="flex items-center gap-x-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        <IconChevronLeft />
+                        <span>Organizaciones</span>
+                    </Link>
+                )}
                 <div className="flex items-center gap-x-1">
                     <span className="">/</span>
                     {hideOrganization ?
@@ -46,14 +52,14 @@ export default function Header() {
 
                 <div className="max-sm:hidden">
                     <SignedIn>
-                        <UserButton/>
+                        <UserButton />
                         <SyncUserWithBackend />
                     </SignedIn>
                 </div>
                 <button className="bg-secondary p-1 rounded-lg hover:rotate-3 transition-all
                     sm:hidden"
-                    onClick={()=> setOpenMenu(!openMenu)}>
-                    <IconMenu/>
+                    onClick={() => setOpenMenu(!openMenu)}>
+                    <IconMenu />
                 </button>
             </section>
         </header>
