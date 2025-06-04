@@ -232,14 +232,16 @@ export default function Diagnoses() {
             )}
             {openModal && (
                 <ModalCreateDiag
-                    setOpenModal={setOpenModal}
+                    isOpen={openModal}
+                    onClose={() => setOpenModal(false)}
                     setDiagnoses={setDiagnoses}
                     setFilteredDiagnoses={setFilteredDiagnoses}
                 />
             )}
             {editDiagnose && (
                 <ModalEditDiag
-                    setEditDiagnose={setEditDiagnose}
+                    isOpen={!!editDiagnose}
+                    onClose={() => setEditDiagnose(null)}
                     setDiagnoses={setDiagnoses}
                     setFilteredDiagnoses={setFilteredDiagnoses}
                     editDiagnose={editDiagnose}
