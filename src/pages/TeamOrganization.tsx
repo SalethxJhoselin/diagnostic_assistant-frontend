@@ -84,7 +84,9 @@ export default function TeamOrganization() {
     const filtered = members.filter(
       (m) =>
         m.userId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.role.toLowerCase().includes(searchQuery.toLowerCase())
+        m.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+
     );
     setFilteredMembers(filtered);
     setCurrentPage(1);
@@ -162,11 +164,11 @@ export default function TeamOrganization() {
       </div>
     </section>
 
-      <div className="overflow-x-auto border rounded-md">
-        <table className="min-w-full border-collapse">
-          <thead className="bg-gray-100 border-b">
+      <div className="w-full overflow-x-auto border rounded-md">
+        <table className="min-w-full table-auto border-collapse">
+          <thead className="bg-secondary border-b">
             <tr>
-              <th className="px-4 py-2 border-r text-center w-12">
+              <th className="w-[40px] text-center px-4 py-2 border-r">
                 <input
                   type="checkbox"
                   checked={
@@ -180,6 +182,7 @@ export default function TeamOrganization() {
                 />
               </th>
               <th className="text-left px-4 py-2 border-r">ID Miembro</th>
+              <th className="text-left px-4 py-2 border-r">Email</th>
               <th className="text-left px-4 py-2 border-r">ID Usuario</th>
               <th className="text-left px-4 py-2 border-r">Rol</th>
               <th className="text-left px-4 py-2 border-r">ID Organización</th>
@@ -209,6 +212,7 @@ export default function TeamOrganization() {
                     />
                   </td>
                   <td className="px-4 py-2 border-r">{member.id}</td>
+                  <td className="px-4 py-2 border-r">{member.user?.email ?? "No disponible"}</td>
                   <td className="px-4 py-2 border-r">{member.userId}</td>
                   <td className="px-4 py-2 border-r">{member.role}</td>
                   <td className="px-4 py-2 border-r">{member.organizationId}</td>
