@@ -64,27 +64,27 @@ export default function HomeOrganization() {
     <div className="w-full max-w-7xl mx-auto p-8">
       {/* Mensaje de bienvenida */}
       <div className="flex flex-col items-center mb-8">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-4">
+        <h1 className="text-3xl font-semibold text-foreground mb-4">
           ¡Bienvenido a {organization?.name}!
         </h1>
-        <p className="text-lg text-gray-600 mb-6">
+        <p className="text-lg text-muted-foreground mb-6">
           Estamos encantados de que seas parte de nuestra organización. Aquí tienes un resumen de tu cuenta.
         </p>
       </div>
 
       {/* Información de la organización */}
-      <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Información de la Organización</h2>
-        <p className="text-sm text-gray-600 mb-2">
+      <div className="bg-white dark:bg-secondary p-6 rounded-lg shadow-lg mb-8">
+        <h2 className="text-xl font-semibold text-foreground mb-4">Información de la Organización</h2>
+        <p className="text-sm  text-muted-foreground mb-2">
           <strong>Organización:</strong> {organization?.name}
         </p>
-        <p className="text-sm text-gray-600 mb-2">
+        <p className="text-sm text-muted-foreground mb-2">
           <strong>Host:</strong> {organization?.hostUser}
         </p>
-        <p className="text-sm text-gray-600 mb-2">
+        <p className="text-sm text-muted-foreground mb-2">
           <strong>Suscripción Activa:</strong> {organization?.subscriptions[0]?.plan.name}
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground mb-2">
             <strong>Fecha de Expiración:</strong> 
             {organization?.subscriptions[0]?.endDate ? 
                 new Date(organization.subscriptions[0].endDate).toLocaleDateString() : 
@@ -96,8 +96,8 @@ export default function HomeOrganization() {
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Gráfico de Miembros */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Miembros</h3>
+        <div className="bg-white  dark:bg-secondary  p-6 rounded-lg shadow-lg">
+          <h3 className="text-xl font-semibold  text-foreground mb-4">Miembros</h3>
           {isLoading ? (
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
           ) : (
@@ -106,8 +106,8 @@ export default function HomeOrganization() {
         </div>
 
         {/* Gráfico de Uso de Modelos */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Uso de Modelos</h3>
+        <div className="bg-white  dark:bg-secondary p-6 rounded-lg shadow-lg">
+          <h3 className="text-xl font-semibold text-foreground mb-4">Uso de Modelos</h3>
           {isLoading ? (
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
           ) : (
