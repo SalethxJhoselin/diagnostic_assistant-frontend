@@ -173,8 +173,6 @@ export default function Consultations() {
                                 Motivo {sortField === "motivo" && (sortOrder === "asc" ? "↑" : "↓")}
                             </th>
                             <th className="text-left px-4 py-2 border-r">Doctor</th>
-                            <th className="w-[40px] text-left px-4 py-2 border-r">Diagnósticos</th>
-                            <th className="w-[40px] text-left px-4 py-2 border-r">Tratamientos</th>
                             <th className="w-[120px] text-left px-4 py-2">Acciones</th>
                         </tr>
                     </thead>
@@ -212,12 +210,6 @@ export default function Consultations() {
                                     </td>
                                     <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
                                         {consultation.user.email} {/* Assuming email is the identifier for the doctor */}
-                                    </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        {consultation.diagnoses.length}
-                                    </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        {consultation.treatments.length}
                                     </td>
                                     <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
                                         <Link to={`/consultations/${consultation.id}`}>
