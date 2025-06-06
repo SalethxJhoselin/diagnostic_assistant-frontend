@@ -1,4 +1,4 @@
-import { IconSearch } from "@/assets/icons";
+import { IconEdit, IconSearch } from "@/assets/icons";
 import ModalConfirmation from "@/components/ModalConfirmation";
 import ModalCreateTreat from "@/components/treatments/ModalCreateTreatments";
 import ModalEditTreat from "@/components/treatments/ModalEditTreatments";
@@ -30,6 +30,8 @@ export default function Treatments() {
             setIsLoading(true);
             try {
                 const treatments = await fetchTreatmentsByOrg(organization.id);
+                console.log(treatments);
+
                 setTreatments(treatments);
                 setFilteredTreatments(treatments);
             } catch (error) {
@@ -103,6 +105,14 @@ export default function Treatments() {
         }
     };
 
+    /*
+    const formatUTCToLocal=(dateString: string) => {
+        return new Date(dateString).toLocaleString('es-ES', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+        });
+    }*/
+
 
 
     return (
@@ -112,7 +122,7 @@ export default function Treatments() {
                 <div className="flex flex-col sm:flex-row gap-y-4 gap-x-4">
                     <Button
                         className="hover:bg-primary/90 border-zinc-400 px-6 py-2 cursor-pointer animate-fade-in-left"
-                        onClick={()=> setOpenModal(true)}
+                        onClick={() => setOpenModal(true)}
                     >
                         Nuevo Tratamiento
                     </Button>
@@ -165,7 +175,7 @@ export default function Treatments() {
                             <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("instructions")}>
                                 Instrucción {sortField === "instructions" && (sortOrder === "asc" ? "↑" : "↓")}
                             </th>
-                            <th className="text-left px-4 py-2">Acciones</th>
+                            <th className="text-left px-2 py-2">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -187,32 +197,36 @@ export default function Treatments() {
                             paginatedTreatments.map((treatment) => (
                                 <tr key={treatment.id} className="group text-[14px]">
                                     <td className="px-4 py-1 border text-center group-hover:border-zinc-400
-                                        transition-colors duration-200 animate-fade-in-up">
+                                        transition-colors duration-200">
                                         <input
                                             type="checkbox"
                                             checked={selectedIds.includes(treatment.id)}
                                             onChange={() => toggleSelect(treatment.id)}
                                         />
                                     </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 
+                                        transition-colors duration-200">
                                         {treatment.description}
                                     </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 
+                                        transition-colors duration-200">
                                         {treatment.duration}
                                     </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                    <td className="px-4 py-1 border group-hover:border-zinc-400 
+                                        transition-colors duration-200">
                                         {treatment.instructions}
                                     </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        <Button
-                                            className=" border-primary text-primary hover:bg-primary/10"
-                                            variant="outline"
+                                    <td className="px-6 py-1 border group-hover:border-zinc-400 
+                                        transition-colors duration-200">
+                                        <div
+                                            className="border border-primary/50 text-primary hover:bg-primary/10
+                                                flex items-center justify-center rounded-md"
                                             onClick={() => {
                                                 setEditTreatment(treatment);
                                             }}
                                         >
-                                            Ver/Editar
-                                        </Button>
+                                            <IconEdit />
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -239,16 +253,14 @@ export default function Treatments() {
             )}
             {openModal && (
                 <ModalCreateTreat
-                    isOpen={openModal}
-                    onClose={() => setOpenModal(false)}
+                    setOpenModal={setOpenModal}
                     setTreatments={setTreatments}
                     setFilteredTreatments={setFilteredTreatments}
                 />
             )}
             {editTreatment && (
                 <ModalEditTreat
-                    isOpen={!!editTreatment}
-                    onClose={() => setEditTreatment(null)}
+                    setEditTreatment={setEditTreatment}
                     setTreatments={setTreatments}
                     setFilteredTreatments={setFilteredTreatments}
                     editTreatment={editTreatment}
