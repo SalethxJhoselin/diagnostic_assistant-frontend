@@ -14,7 +14,7 @@ interface ModalEditTreatProps {
 
 export default function ModalEditTreat({ setEditTreatment, setTreatments, setFilteredTreatments,
     editTreatment }: ModalEditTreatProps) {
-    const { organization } = useOrganization();
+const { organization } = useOrganization();
 
     const [description, setDescription] = useState(editTreatment.description);
     const [instructions, setInstructions] = useState(editTreatment.instructions);
