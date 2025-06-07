@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function ServiciosDestacados() {
   const servicios = [
@@ -18,7 +19,11 @@ export default function ServiciosDestacados() {
       img: "https://static.wixstatic.com/media/7869d1_8e6fd258fbd14449b44806f40dfca329~mv2.jpg/v1/fill/w_980,h_572,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/7869d1_8e6fd258fbd14449b44806f40dfca329~mv2.jpg",
     },
   ];
+  const navigate = useNavigate();
 
+  const handleStart = () => {
+    navigate("/dashboard/organizations");
+  };
   return (
     <section id="servicios" className="container mx-auto py-16 px-4 text-center">
       <h2 className="text-3xl font-bold mb-12">Así te podemos ayudar</h2>
@@ -40,7 +45,8 @@ export default function ServiciosDestacados() {
             <div className="p-6 space-y-3">
               <h3 className="text-xl font-semibold">{item.title}</h3>
               <p className="text-sm text-muted-foreground">{item.desc}</p>
-              <button className="mt-4 px-4 py-2 text-primary border border-primary rounded-full hover:bg-primary hover:text-white transition text-sm">
+              <button className="mt-4 px-4 py-2 text-primary border border-primary rounded-full hover:bg-primary hover:text-white transition text-sm"
+                onClick={handleStart}>
                 ¡Me interesa!
               </button>
             </div>

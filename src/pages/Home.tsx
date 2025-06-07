@@ -17,7 +17,15 @@ export default function Home() {
   const handleStart = () => {
     navigate("/dashboard/organizations");
   };
-
+  const buttonAnimation = {
+    rotate: [-8, 8, -8],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      repeatType: "loop" as const,
+      ease: "easeInOut",
+    },
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       {/* Navbar con padding superior reservado */}
@@ -53,16 +61,19 @@ export default function Home() {
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-200">
             Tu asistente inteligente para diagnósticos médicos. Gestiona pacientes,
-            consultas y tratamientos de manera eficiente.
+            consultas y tratamientos de manera eficiente y con ayuda de la Inteligencia Artificial.
           </p>
 
           {isSignedIn ? (
-            <div
+            <motion.div
               onClick={handleStart}
               className="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-full font-medium hover:bg-primary/90 transition cursor-pointer"
+              animate={buttonAnimation}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
             >
               Start your organization
-            </div>
+            </motion.div>
           ) : (
             <SignInButton forceRedirectUrl={'/dashboard/organizations'} mode="modal">
               <div className="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-full font-medium hover:bg-primary/90 transition cursor-pointer">
@@ -71,7 +82,7 @@ export default function Home() {
             </SignInButton>
           )}
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            Accede a todas las funcionalidades de la plataforma
+            Accede a todas las funcionalidades de la plataforma, Conoce los planes disponibles.
           </p>
         </motion.div>
       </section>
