@@ -1,8 +1,9 @@
 import { apilocal } from "./api";
 
 export interface Appointment {
-  id: string;
-  appointmentDateTime: string; 
+  date: string;
+  startTime: Date;
+  endTime: Date;    
   patient: {
     name: string;
   };
@@ -10,16 +11,21 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentDto {
-  appointmentDateTime: string; 
+  date: string;
+  startTime: Date;
+  endTime: Date;
   patientId: string;
   organizationId: string;
 }
 
 export interface UpdateAppointmentDto {
-  appointmentDateTime?: string;
-  patientId?: string;
+  date: string;
+  startTime: Date;
+  endTime: Date;
+  patientId: string;
   organizationId: string;
 }
+
 
 const handleResponse = async (res: Response) => {
   if (!res.ok) {

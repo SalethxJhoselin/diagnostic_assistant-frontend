@@ -30,7 +30,7 @@ export default function ModalCreatePatient({
     name: "",
     aPaternal: "",
     aMaternal: "",
-    sexo: "female", // Valor por defecto válido
+    sexo: "female", 
     birthDate: "",
     phone: "",
     email: "",
@@ -127,7 +127,7 @@ export default function ModalCreatePatient({
               className="w-full px-2 py-1 border rounded-md"
               value={form.name}
               onChange={handleChange}
-              placeholder="Ej: Juan"
+              placeholder="Nombre o nombres"
             />
           </div>
           <div>
