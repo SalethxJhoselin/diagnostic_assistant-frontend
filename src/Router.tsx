@@ -22,6 +22,8 @@ import ChatBot from "./pages/ChatBot";
 import PatientsProfile from "./pages/clinic/PatientsProfile";
 import Plans from "./pages/Plans";
 import Payment from "./pages/Payment";
+import CancerDePiel from "./pages/InfoDelHome/CancerPiel";
+import DermatologiaGeneral from "./pages/InfoDelHome/DermatologiaGeneral";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isSignedIn, isLoaded } = useAuth();
@@ -51,6 +53,8 @@ export function Router() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/cancer-de-piel" element={<CancerDePiel />} />
+            <Route path="/dermatologia-general" element={<DermatologiaGeneral />} />
 
             {/* Rutas protegidas sin Layout */}
             <Route path="/dashboard/plans" element={

@@ -6,7 +6,7 @@ import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/clerk-reac
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 
-export default function Navbar() {
+export default function NavbarAux() {
     const [show, setShow] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -34,23 +34,12 @@ export default function Navbar() {
             <div className="container mx-auto px-4 py-3 flex justify-between items-center">
                 {/* Logo + título */}
                 <div className="flex items-center space-x-2">
-                    <IconLogo />
-                    <span className="text-xl font-semibold text-foreground">
-                        Diagnostic Assistant
-                    </span>
-                </div>
-
-                {/* Navegación */}
-                <div className="hidden md:flex space-x-6">
-                     <Link to="/cancer-de-piel" className="text-foreground hover:text-primary font-medium transition-colors">
-                    Cáncer de Piel
-                </Link>
-                <Link to="/dermatologia-general" className="text-foreground hover:text-primary font-medium transition-colors">
-                    Dermatología General
-                </Link>
-                     <a href="#servicios" className="text-foreground hover:text-primary font-medium transition-colors">Servicios</a>
-                    <a href="#sobre" className="text-foreground hover:text-primary font-medium transition-colors">Sobre Nosotros</a>
-                    <a href="#contacto" className="text-foreground hover:text-primary font-medium transition-colors">Contacto</a>
+                   <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition">
+                        <IconLogo />
+                        <span className="text-xl font-semibold text-foreground">
+                            Diagnostic Assistant
+                        </span>
+                    </Link>
                 </div>
 
                 {/* Botones de sesión y tema */}
