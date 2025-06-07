@@ -53,8 +53,12 @@ export default function ModalEditPatient({
       return;
     }
 
-    setLoading(true);
+    if (!form.id || form.id.length < 8) {
+      toast.error("ID de paciente inválido");
+      return;
+    }
 
+    setLoading(true);
     try {
       const updatedData: UpdatePatientPayload = {
         id: form.id,
@@ -69,6 +73,7 @@ export default function ModalEditPatient({
         organizationId: organization.id,
       };
 
+      console.log("Intentando actualizar paciente con ID:", updatedData.id);
       await fetchUpdatePatient(updatedData);
 
       const updated = await fetchPatientsByOrg(organization.id);
@@ -77,7 +82,7 @@ export default function ModalEditPatient({
       toast.success("Paciente actualizado correctamente");
       onClose();
     } catch (err) {
-      console.error("Error actualizando paciente", err);
+      console.error("Error actualizando paciente:", err);
       toast.error("Error al actualizar paciente");
     } finally {
       setLoading(false);

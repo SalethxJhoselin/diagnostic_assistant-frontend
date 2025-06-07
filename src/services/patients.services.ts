@@ -44,15 +44,21 @@ export const fetchPatientsByOrg = async (organizationId:string) => {
   return await response.json();
 }
 
-export const fetchUpdatePatient = async (data: GetPatient) => {
-  const res = await fetch(`${apilocal}/patients/${data.id}`, {
-    method: "PUT",
+export type UpdatePatientPayload = Omit<GetPatient, 'createAt' | 'updatedAt'>;
+
+export const fetchUpdatePatient = async (data: UpdatePatientPayload) => {
+  const { id, ...body } = data;
+
+  const res = await fetch(`${apilocal}/patients/${id}`, {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
+
   if (!res.ok) throw new Error("Error actualizando paciente");
   return await res.json();
 };
+
 export const fetchCreatePatient = async (data: CreatePatient) => {
   const res = await fetch(`${apilocal}/patients`, {
     method: "POST",
@@ -73,7 +79,3 @@ export const fetchDeletePatient = async (id: string) => {
   if (!res.ok) throw new Error("Error al eliminar paciente");
   return await res.json();
 };
-
-
-
-export type UpdatePatientPayload = Omit<GetPatient, 'createAt' | 'updatedAt'>;
