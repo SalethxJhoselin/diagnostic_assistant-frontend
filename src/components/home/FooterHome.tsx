@@ -17,16 +17,16 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-foreground mb-2">Acerca de</h4>
           <ul className="space-y-1">
-            <li><a href="#contacto" className="hover:underline">Contacto</a></li>
-            <li><a href="#politica" className="hover:underline">Política de datos</a></li>
+            <li><a  className="hover:underline">Contacto</a></li>
+            <li><a className="hover:underline">Política de datos</a></li>
           </ul>
         </div>
         <div>
           <h4 className="font-semibold text-foreground mb-2">Acceso de usuarios</h4>
           <ul className="space-y-1">
-            <li><a href="/login" className="hover:underline">Iniciar sesión</a></li>
-            <li><a href="/reset-password" className="hover:underline">Restablecer contraseña</a></li>
-            <li><a href="/logout" className="hover:underline">Cerrar sesión</a></li>
+            <li><a  className="hover:underline">Iniciar sesión</a></li>
+            <li><a  className="hover:underline">Restablecer contraseña</a></li>
+            <li><a  className="hover:underline">Cerrar sesión</a></li>
           </ul>
         </div>
       </div>
