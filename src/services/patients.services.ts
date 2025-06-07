@@ -22,8 +22,9 @@ export interface GetPatient {
   phone:number
   email:string
   ci: number;
-  createAdt:Date
-  organizationId:string
+  organizationId: string
+  createAt?: Date;
+  updatedAt?: Date;
 }
 
 export const fetchPatientsByOrg = async (organizationId:string) => {
@@ -42,3 +43,37 @@ export const fetchPatientsByOrg = async (organizationId:string) => {
 
   return await response.json();
 }
+
+export const fetchUpdatePatient = async (data: GetPatient) => {
+  const res = await fetch(`${apilocal}/patients/${data.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Error actualizando paciente");
+  return await res.json();
+};
+export const fetchCreatePatient = async (data: CreatePatient) => {
+  const res = await fetch(`${apilocal}/patients`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) throw new Error("Error al crear paciente");
+  return await res.json();
+};
+
+export const fetchDeletePatient = async (id: string) => {
+  const res = await fetch(`${apilocal}/patients/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) throw new Error("Error al eliminar paciente");
+  return await res.json();
+};
+
+
+
+export type UpdatePatientPayload = Omit<GetPatient, 'createAt' | 'updatedAt'>;
