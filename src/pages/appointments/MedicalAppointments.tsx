@@ -17,7 +17,7 @@ import { fetchPatientsByOrg } from "@/services/patients.services";
 export default function MedicalAppointments() {
   const { organization } = useOrganization();
   const [appointments, setAppointments] = useState<any[]>([]);
-  const [patients, setPatients] = useState<{ id: string; name: string }[]>([]);
+  const [patients, setPatients] = useState<{id: string; name: string; aPaternal?: string; aMaternal?: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -185,7 +185,7 @@ export default function MedicalAppointments() {
               <option value="">Seleccione un paciente</option>
               {patients.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name}
+                  {p.name} {p.aPaternal ?? ""} {p.aMaternal ?? ""}
                 </option>
               ))}
             </select>
@@ -230,8 +230,8 @@ export default function MedicalAppointments() {
               appointments.map((appt) => (
                 <tr
                   key={appt.id}
-                  className="group text-[14px] border-t hover:bg-gray-900 transition-all"
-                >
+                  className="group text-[14px] border-t hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                  >
                   <td className="px-4 py-2 border">
                     {appt.patient?.name || "No asignado"}
                   </td>
