@@ -14,6 +14,12 @@ export interface GetDiagnoses{
     organizationId: string
 }
 
+export interface UpdateDiagnoses{
+    name: string
+    description: string
+    organizationId: string
+}
+
 export const fetchCreateDiagnoses = async (data: CreateDiagnoses) => {
     const response = await fetch(`${apilocal}/diagnoses`, {
         method: "POST",
@@ -60,9 +66,9 @@ export const fetchDeleteDiagnoses = async (id: string) => {
     return await response.json();
 }
 
-export const fetchUpdateDiagnoses = async (data:GetDiagnoses) => {
-    const response = await fetch(`${apilocal}/diagnoses/${data.id}`, {
-        method: "PUT",
+export const fetchUpdateDiagnoses = async (id:string,data:UpdateDiagnoses) => {
+    const response = await fetch(`${apilocal}/diagnoses/${id}`, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json"
         },
