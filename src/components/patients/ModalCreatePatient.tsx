@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import BaseModal from "@/components/ui/BaseModal";
 import { useOrganization } from "@/hooks/organizationContex";
 import { toast } from "sonner";
+import DatePickerCustom from "@/components/appointments/DatePickerCustom";
+
 import {
   type CreatePatient,
   type GetPatient,
@@ -25,12 +27,22 @@ export default function ModalCreatePatient({
 }: ModalCreatePatientProps) {
   const { organization } = useOrganization();
   const [loading, setLoading] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => setShowDatePicker(true), 150);
+      return () => clearTimeout(timer);
+    } else {
+      setShowDatePicker(false);
+    }
+  }, [isOpen]);
 
   const [form, setForm] = useState({
     name: "",
     aPaternal: "",
     aMaternal: "",
-    sexo: "female", 
+    sexo: "female",
     birthDate: "",
     phone: "",
     email: "",
@@ -69,8 +81,6 @@ export default function ModalCreatePatient({
         organizationId: organization.id,
       };
 
-      console.log("Payload enviado:", newPatient); // DEBUG
-
       await fetchCreatePatient(newPatient);
       toast.success("Paciente creado correctamente");
 
@@ -89,7 +99,6 @@ export default function ModalCreatePatient({
         ci: "",
       });
       onClose();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Error creando paciente", err);
       toast.error("Error al crear paciente");
@@ -184,16 +193,14 @@ export default function ModalCreatePatient({
               placeholder="correo@ejemplo.com"
             />
           </div>
-          <div>
+          <div className="mb-2">
             <label htmlFor="birthDate" className="font-semibold">Fecha de Nacimiento</label>
-            <input
-              id="birthDate"
-              name="birthDate"
-              type="date"
-              className="w-full px-2 py-1 border rounded-md"
-              value={form.birthDate}
-              onChange={handleChange}
-            />
+            {showDatePicker && (
+              <DatePickerCustom
+                value={form.birthDate}
+                onChange={(val) => setForm((prev) => ({ ...prev, birthDate: val }))}
+              />
+            )}
           </div>
           <div>
             <label htmlFor="sexo" className="font-semibold">Sexo</label>
