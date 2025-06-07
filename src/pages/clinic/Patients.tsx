@@ -66,7 +66,7 @@ export default function Patients() {
 
           <div className="flex items-center relative group">
             <div className="absolute pl-4 text-zinc-600 dark:text-zinc-200">
-             <IconSearch />
+              <IconSearch />
             </div>
             <input
               className="w-full sm:w-80 border rounded-lg pl-12 py-0.5 bg-[var(--input-soft)]"
@@ -107,20 +107,23 @@ export default function Patients() {
               </tr>
             ) : (
               filteredPatients.map((p) => (
-                <tr key={p.id} className="group text-[14px] border-t hover:bg-gray-900 transition-all animate-fade-in-up">
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors">
+                <tr 
+                  key={p.id} 
+                  className="group text-[14px] border-t hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-all animate-fade-in-up"
+                >
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">
                     {`${p.name} ${p.aPaternal} ${p.aMaternal}`}
                   </td>
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors">{p.ci}</td>
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors">
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">{p.ci}</td>
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">
                     {p.sexo === "F" ? "Femenino" : "Masculino"}
                   </td>
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors">
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">
                     {new Date(p.birthDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors">{p.email}</td>
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors">{p.phone}</td>
-                  <td className="px-4 py-2 border group-hover:border-zinc-400 transition-colors flex gap-2">
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">{p.email}</td>
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors">{p.phone}</td>
+                  <td className="px-4 py-3 border group-hover:border-gray-200 dark:group-hover:border-gray-700 transition-colors flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -147,7 +150,6 @@ export default function Patients() {
         </table>
       </div>
 
-      {/* Modal crear */}
       {openModalCreate && (
         <ModalCreatePatient
           isOpen={openModalCreate}
@@ -157,7 +159,6 @@ export default function Patients() {
         />
       )}
 
-      {/* Modal editar */}
       {editPatient && (
         <ModalEditPatient
           isOpen={!!editPatient}
@@ -168,7 +169,6 @@ export default function Patients() {
         />
       )}
 
-      {/* Modal eliminar */}
       {deletePatient && (
         <ModalDeletePatient
           isOpen={!!deletePatient}

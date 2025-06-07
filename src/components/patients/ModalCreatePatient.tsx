@@ -30,7 +30,7 @@ export default function ModalCreatePatient({
     name: "",
     aPaternal: "",
     aMaternal: "",
-    sexo: "", 
+    sexo: "female", // Valor por defecto válido
     birthDate: "",
     phone: "",
     email: "",
@@ -50,7 +50,7 @@ export default function ModalCreatePatient({
 
     const { name, aPaternal, aMaternal, sexo, birthDate, phone, email, ci } = form;
 
-    if (!name || !aPaternal || !aMaternal || !birthDate || !phone || !email || !ci) {
+    if (!name || !aPaternal || !aMaternal || !birthDate || !phone || !email || !ci || !sexo) {
       toast.error("Todos los campos son obligatorios");
       return;
     }
@@ -63,11 +63,13 @@ export default function ModalCreatePatient({
         aMaternal,
         sexo,
         birthDate: new Date(birthDate).toISOString(),
-        phone,
+        phone: parseInt(phone),
         email,
         ci: parseInt(ci),
         organizationId: organization.id,
       };
+
+      console.log("Payload enviado:", newPatient); // DEBUG
 
       await fetchCreatePatient(newPatient);
       toast.success("Paciente creado correctamente");
@@ -80,14 +82,15 @@ export default function ModalCreatePatient({
         name: "",
         aPaternal: "",
         aMaternal: "",
-        sexo: "",
+        sexo: "female",
         birthDate: "",
         phone: "",
         email: "",
         ci: "",
       });
       onClose();
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       console.error("Error creando paciente", err);
       toast.error("Error al crear paciente");
     } finally {
