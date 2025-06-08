@@ -30,7 +30,7 @@ export default function PatientsProfile() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedConsultation, setSelectedConsultation] = useState<PatientHistory['consultations'][0] | null>(null);
     const { organization } = useOrganization();
-    const patientId = "cmbhefcyi0001urh4eo3pu3fm";
+    const patientId = "cmbgy5ss40009urgg1dlan6vd";
 
     useEffect(() => {
         const fetchData = async () => {
