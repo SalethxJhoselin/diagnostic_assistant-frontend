@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 
 export default function AppMovil() {
   const buttonAnimation = {
-    rotate: [-8, 8, -8],
+    rotate: [-10, 10, -10],
     transition: {
-      duration: 2,
+      duration: 1,
       repeat: Infinity,
       repeatType: "loop" as const,
       ease: "easeInOut",
@@ -12,18 +12,21 @@ export default function AppMovil() {
   };
 
   return (
-    <section className="bg-primary/20 py-28 px-12 rounded-lg shadow-lg w-full">
+    <section id="contacto" className="bg-primary/20 py-28 px-12 rounded-lg shadow-lg w-full">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-16 max-w-screen-xl mx-auto">
         {/* Imagen a la izquierda */}
         <img
-          src="https://play-lh.googleusercontent.com/rUKScxVJpJaw_nJrpU-BXKNos1h41fWM67kk7-f2LSOQ4QbEGI4FOcxnd9os1yJJG7U=w526-h296-rw"
+          src="https://firebasestorage.googleapis.com/v0/b/joalcamo-4a398.appspot.com/o/photo_5053096158834044556_y.jpg?alt=media&token=5ad292db-14bd-462b-b249-36d14c29421d"
           alt="Banner App Diagnostic Assistant"
           className="w-full max-w-md rounded-2xl shadow-2xl border border-indigo-200"
         />
 
         {/* Texto y botón alineados a la derecha */}
         <div className="flex-1 max-w-xl text-right">
-          <h2 className="text-4xl font-extrabold mb-4 text-primary leading-tight">
+          <h1 className="text-5xl font-extrabold mb-4 text-primary leading-tight">
+            Descarga la App Movil
+          </h1>
+          <h2 className="text-4xl font-exstrabold mb-4 text-primary leading-tight">
             Lleva <span className="text-indigo-600">Diagnostic Assistant</span> en tu bolsillo
           </h2>
           <p className="text-indigo-700 mb-12 text-xl font-medium leading-relaxed">
@@ -38,6 +41,7 @@ export default function AppMovil() {
           >
             ¡Descarga Ya!
           </motion.a>
+          
         </div>
       </div>
     </section>

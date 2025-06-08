@@ -3,23 +3,16 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useOrganization } from "@/hooks/organizationContex";
 import { fetchDiagnosesByOrg, fetchUpdateDiagnoses, type GetDiagnoses } from "@/services/diagnoses.services";
-import BaseModal from "@/components/ui/BaseModal";
 
 interface ModalEditDiagProps {
-    isOpen: boolean;
-    onClose: () => void;
+    setEditDiagnose: React.Dispatch<React.SetStateAction<GetDiagnoses | null>>;
     setDiagnoses: React.Dispatch<React.SetStateAction<GetDiagnoses[]>>;
     setFilteredDiagnoses: React.Dispatch<React.SetStateAction<GetDiagnoses[]>>;
     editDiagnose: GetDiagnoses;
 }
 
-export default function ModalEditDiag({ 
-    isOpen, 
-    onClose, 
-    setDiagnoses, 
-    setFilteredDiagnoses,
-    editDiagnose 
-}: ModalEditDiagProps) {
+export default function ModalEditDiag({ setEditDiagnose, setDiagnoses, setFilteredDiagnoses,
+    editDiagnose }: ModalEditDiagProps) {
     const { organization } = useOrganization();
 
     const [name, setName] = useState(editDiagnose.name);
@@ -31,72 +24,100 @@ export default function ModalEditDiag({
             toast.error("Organización no encontrada");
             return;
         }
+        if (!name || !description) {
+            toast.error("Todos los campos son obligatorios");
+            return;
+        }
         const updatedDiagnose = {
-            id: editDiagnose.id,
             name,
-            creationDate: editDiagnose.creationDate,
             description,
             organizationId: organization.id,
         };
+        const editPromise = new Promise(async (resolve, reject) =>{
+            try {
+                const result = await fetchUpdateDiagnoses(editDiagnose.id, updatedDiagnose);
+                resolve("success");
+                setDiagnoses(prev => prev.map(diagnose => diagnose.id === editDiagnose.id ? result : diagnose));
+                setFilteredDiagnoses(prev => prev.map(diagnose => diagnose.id === editDiagnose.id ? result : diagnose));
+            } catch (error) {
+                reject(error);
+            }
+        })
+
+        toast.promise(editPromise, {
+            loading: "Actualizando diagnostico...",
+            success: "Diagnostico actualizado correctamente",
+            error: "Error al actualizar diagnostico",
+        });
+
         try {
-            await fetchUpdateDiagnoses(updatedDiagnose);
+            await editPromise;
             const updatedDiagnoses = await fetchDiagnosesByOrg(organization.id);
             setDiagnoses(updatedDiagnoses);
             setFilteredDiagnoses(updatedDiagnoses);
-            onClose();
-            toast.success("Diagnostico actualizado correctamente");
+            setEditDiagnose(null);
         } catch (error) {
-            console.error("Error updating treatment:", error);
             toast.error("Error al actualizar Diagnostico");
         }
     }
-
-    const modalFooter = (
-        <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={onClose}>
-                Cancelar
-            </Button>
-            <Button onClick={handleEditDiagnose}>
-                Guardar Cambios
-            </Button>
-        </div>
-    );
-
     return (
-        <BaseModal
-            isOpen={isOpen}
-            onClose={onClose}
-            title="Editar Diagnostico"
-            footer={modalFooter}
-            size="lg"
+
+        <div
+            className="fixed inset-0 z-50 bg-black/50 bg-opacity-50 flex items-center justify-center"
+            onClick={() => setEditDiagnose(null)}
         >
-            <div className="flex flex-col gap-4">
-                <div>
-                    <label className="font-semibold">Nombre</label>
-                    <input
-                        type="text"
-                        className="w-full px-2 py-1 border rounded-md"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
+            <div
+                className="bg-white dark:bg-secondary rounded-md shadow-xl w-full sm:w-xl mx-2"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex justify-between items-center border-b px-6 py-3">
+                    <h2 className="text-md font-semibold">Editar Diagnostico</h2>
                 </div>
-                <div>
-                    <label className="font-semibold">Descripción</label>
-                    <textarea
-                        className="w-full px-2 py-1 border rounded-md"
-                        rows={3}
-                        value={description}
-                        onChange={(e) => {
-                            if (e.target.value.length <= maxDescriptionsLength) {
-                                setDescription(e.target.value);
-                            }
-                        }}
-                    />
-                    <p className="text-sm text-gray-500">
-                        {description.length}/{maxDescriptionsLength} caracteres
-                    </p>
+                <section className="flex flex-col px-6 py-3">
+                    <div className="flex flex-col gap-4 pb-4">
+                        <div>
+                            <label className="font-semibold">Nombre</label>
+                            <input
+                                type="text"
+                                className="w-full px-2 py-1 border rounded-md"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="font-semibold">Descripción</label>
+                            <textarea
+                                className="w-full px-2 py-1 border rounded-md"
+                                rows={3}
+                                value={description}
+                                onChange={(e) => {
+                                    if (e.target.value.length <= maxDescriptionsLength) {
+                                        setDescription(e.target.value);
+                                    }
+                                }}
+                            />
+                            <p className="text-sm text-gray-500">
+                                {description.length}/{maxDescriptionsLength} caracteres
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                <div className="border-t px-6 py-3 flex items-center justify-between">
+                    <button
+                        className="border rounded-md px-4 py-1 text-[14px]
+                        cursor-pointer transition-all font-semibold hover:bg-secondary"
+                        onClick={() => setEditDiagnose(null)}
+                    >
+                        Cancelar
+                    </button>
+                    <Button
+                        className="text-white cursor-pointer"
+                        onClick={handleEditDiagnose}
+                    >
+                        Guardar Cambios
+                    </Button>
                 </div>
             </div>
-        </BaseModal>
-    );
+        </div>
+    )
 }

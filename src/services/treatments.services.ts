@@ -5,6 +5,8 @@ export interface CreateTreatment {
     duration: string;
     instructions: string;
     organizationId: string;
+    frequencyValue: number
+    frequencyUnit: string
 }
 
 export interface GetTreatments{
@@ -12,6 +14,19 @@ export interface GetTreatments{
     description: string;
     duration: string;
     instructions: string;
+    frequencyValue: number
+    frequencyUnit: string
+    organizationId: string; 
+    createdAt: Date
+    updatedAt:Date
+}
+
+export interface UpdateTreatment{
+    description: string;
+    duration: string;
+    instructions: string;
+    frequencyValue: number
+    frequencyUnit: string
     organizationId: string; 
 }
 
@@ -61,9 +76,10 @@ export const fetchDeleteTreatments = async (id: string) => {
     return await response.json();
 }
 
-export const fetchUpdateTreatments = async (data:GetTreatments) => {
-    const response = await fetch(`${apilocal}/treatments/${data.id}`, {
-        method: "PUT",
+export const fetchUpdateTreatments = async (id:string, data:UpdateTreatment) => {
+    
+    const response = await fetch(`${apilocal}/treatments/${id}`, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json"
         },

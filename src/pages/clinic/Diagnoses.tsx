@@ -1,4 +1,4 @@
-import { IconSearch } from "@/assets/icons";
+import { IconEdit, IconSearch } from "@/assets/icons";
 import ModalCreateDiag from "@/components/diagnoses/ModalCreateDiagnoses";
 import ModalEditDiag from "@/components/diagnoses/ModalEditDiagnoses";
 import ModalConfirmation from "@/components/ModalConfirmation";
@@ -68,7 +68,7 @@ export default function Diagnoses() {
         );
     };
 
-    const handleSort = (field: "description" | "name" ) => {
+    const handleSort = (field: "description" | "name") => {
         if (sortField === field) {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
         } else {
@@ -161,7 +161,7 @@ export default function Diagnoses() {
                             <th className="text-left px-4 py-2 border-r cursor-pointer" onClick={() => handleSort("description")}>
                                 Descripción {sortField === "description" && (sortOrder === "asc" ? "↑" : "↓")}
                             </th>
-                            <th className="w-[120px] text-left px-4 py-2">Acciones</th>
+                            <th className="w-[90px] px-2 py-2">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -196,16 +196,15 @@ export default function Diagnoses() {
                                     <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
                                         {diagnose.description}
                                     </td>
-                                    <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                        <Button
-                                            className=" border-primary text-primary hover:bg-primary/10"
-                                            variant="outline"
-                                            onClick={() => {
+                                    <td className="px-6 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
+                                        <div
+                                            className="border border-primary/50 text-primary hover:bg-primary/10
+                                                flex items-center justify-center rounded-md"                                            onClick={() => {
                                                 setEditDiagnose(diagnose);
                                             }}
                                         >
-                                            Ver/Editar
-                                        </Button>
+                                            <IconEdit />
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -240,8 +239,7 @@ export default function Diagnoses() {
             )}
             {editDiagnose && (
                 <ModalEditDiag
-                    isOpen={!!editDiagnose}
-                    onClose={() => setEditDiagnose(null)}
+                    setEditDiagnose={() => setEditDiagnose(null)}
                     setDiagnoses={setDiagnoses}
                     setFilteredDiagnoses={setFilteredDiagnoses}
                     editDiagnose={editDiagnose}

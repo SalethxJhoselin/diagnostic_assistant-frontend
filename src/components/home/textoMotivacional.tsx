@@ -1,4 +1,11 @@
+import { useNavigate } from "react-router-dom";
+
 export default function TextoMotivacional() {
+   const navigate = useNavigate();
+
+  const handleStart = () => {
+    navigate("/dashboard/organizations");
+  };
   return (
     <section
       className="relative py-20 px-4 text-center"
@@ -25,7 +32,8 @@ export default function TextoMotivacional() {
           <p className="italic border-l-4 border-primary pl-4 max-w-xl mx-auto text-sm">
             “Siempre encontramos el equilibrio entre lo médico y lo estético.”
           </p>
-          <button className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-primary/90 transition">
+          <button className="mt-4 px-6 py-2 bg-primary text-white rounded-full hover:bg-primary/90 transition"
+            onClick={handleStart}>
             Así te podemos ayudar
           </button>
         </div>

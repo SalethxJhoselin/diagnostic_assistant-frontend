@@ -6,6 +6,12 @@ export interface OrganizationMember {
   organizationId: string;
   userId: string;
   role: string;
+  createdAt: string;
+  updatedAt: string;
+  user: UserInfo
+}
+export interface UserInfo {
+  email: string;
 }
 
 // Crear un miembro en la organización
