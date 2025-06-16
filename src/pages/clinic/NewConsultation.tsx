@@ -260,9 +260,10 @@ export default function NewConsultation() {
                         </Button>
                         {openModalDiag &&
                             <ModalCreateDiag
+                                isOpen={openModalDiag}
+                                onClose={() => setOpenModalDiag(false)}
                                 setDiagnoses={setDiagnoses}
                                 setFilteredDiagnoses={()=>{}}
-                                setOpenModal={setOpenModalDiag}
                             />
                         }
                     </section>
@@ -299,9 +300,10 @@ export default function NewConsultation() {
                         </Button>
                         {openModalTreat &&
                             <ModalCreateTreat
+                                isOpen={openModalTreat}
+                                onClose={() => setOpenModalTreat(false)}
                                 setTreatments={setTreatments}
                                 setFilteredTreatments={()=>{}}
-                                setOpenModal={setOpenModalTreat}
                             />
                         }
                     </section>
