@@ -39,6 +39,7 @@ export default function Sidebar() {
       children: [
         { name: "Medical Appointments", path: `/dashboard/org/${id}/appointments` },
         { name: "Schedules", path: `/dashboard/org/${id}/attention-hours` },
+        { name: "Organization Schedules", path: `/dashboard/org/${id}/organization-schedules` },
       ],
     },
     {

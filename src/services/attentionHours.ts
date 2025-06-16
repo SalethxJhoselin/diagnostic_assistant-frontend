@@ -6,6 +6,10 @@ export interface AttentionHour {
   startTime: string;
   endTime: string;
   organizationId: string;
+  users: {
+    id: string;
+    email: string;
+  }[];
 }
 
 export interface CreateAttentionHour {
@@ -23,6 +27,11 @@ export interface UpdateAttentionHour {
 
 export interface AssignUserToHour {
   userId: string;
+  attentionHourId: string;
+}
+
+export interface AssignMultipleUsersToHour {
+  userIds: string[];
   attentionHourId: string;
 }
 
@@ -106,4 +115,36 @@ export const fetchRemoveUserFromHour = async (data: AssignUserToHour) => {
     body: JSON.stringify(data),
   });
   return handleResponse(response);
-}; 
+};
+
+export const fetchUsersByAttentionHour = async (attentionHourId: string) => {
+  const response = await fetch(`${apilocal}/attention-hour/users/${attentionHourId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return handleResponse(response);
+};
+
+export const fetchAssignMultipleUsersToHour = async (data: AssignMultipleUsersToHour) => {
+  const response = await fetch(`${apilocal}/attention-hour/attHourUsers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(response);
+};
+
+export const fetchRemoveMultipleUsersFromHour = async (data: AssignMultipleUsersToHour) => {
+  const response = await fetch(`${apilocal}/attention-hour/attHourUsers`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(response);
+};
