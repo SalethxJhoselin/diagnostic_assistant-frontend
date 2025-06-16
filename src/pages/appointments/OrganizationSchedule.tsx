@@ -11,11 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // Constantes
 const DAYS_OF_WEEK = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"] as const;
 const BLOCK_COLORS = [
-  { light: 'bg-green-100 border-green-200', dark: 'dark:bg-green-900/30 dark:border-green-800' },
-  { light: 'bg-blue-100 border-blue-200', dark: 'dark:bg-blue-900/30 dark:border-blue-800' },
-  { light: 'bg-purple-100 border-purple-200', dark: 'dark:bg-purple-900/30 dark:border-purple-800' },
-  { light: 'bg-yellow-100 border-yellow-200', dark: 'dark:bg-yellow-900/30 dark:border-yellow-800' },
-  { light: 'bg-pink-100 border-pink-200', dark: 'dark:bg-pink-900/30 dark:border-pink-800' },
+  { light: 'bg-green-100 border-green-200', dark: 'dark:bg-green-900/40 dark:border-green-800/60' },
+  { light: 'bg-blue-100 border-blue-200', dark: 'dark:bg-blue-900/40 dark:border-blue-800/60' },
+  { light: 'bg-purple-100 border-purple-200', dark: 'dark:bg-purple-900/40 dark:border-purple-800/60' },
+  { light: 'bg-yellow-100 border-yellow-200', dark: 'dark:bg-yellow-900/40 dark:border-yellow-800/60' },
+  { light: 'bg-pink-100 border-pink-200', dark: 'dark:bg-pink-900/40 dark:border-pink-800/60' },
 ] as const;
 
 // Utilidades
@@ -120,13 +120,13 @@ export default function OrganizationSchedule() {
     <td key={time} className="px-1 py-4 text-center">
       <div className="relative h-8">
         {isInBlock && (
-          <div className={`absolute inset-0 ${block.color} rounded-md`} />
+          <div className={`absolute inset-0 ${block.color} rounded-md transition-colors duration-200`} />
         )}
         <span
-          className={`relative inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
+          className={`relative inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium transition-colors duration-200 ${
             isInBlock 
-              ? 'text-gray-800 dark:text-gray-200' 
-              : 'text-gray-400 dark:text-gray-600'
+              ? 'text-gray-800 dark:text-gray-100' 
+              : 'text-gray-400 dark:text-gray-500'
           }`}
         >
           {isInBlock ? '✓' : ''}
@@ -137,7 +137,7 @@ export default function OrganizationSchedule() {
 
   const renderMemberRow = (member: OrganizationMember, timeBlocks: any[]) => (
     <>
-      <tr key={member.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+      <tr key={member.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
         <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
           {member.user?.email ?? member.userId}
         </td>
@@ -160,9 +160,9 @@ export default function OrganizationSchedule() {
         })}
       </tr>
       {timeBlocks.slice(1).map((block, blockIndex) => (
-        <tr key={`${member.id}-${blockIndex}`} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+        <tr key={`${member.id}-${blockIndex}`} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
           <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-            <span className="text-gray-400 dark:text-gray-500 text-xs">Horario adicional {blockIndex + 2}</span>
+            <span className="text-gray-400 dark:text-gray-400 text-xs">Horario adicional {blockIndex + 2}</span>
           </td>
           {filteredTimeSlots.map((time) => {
             const [hour, minute] = time.split(':').map(Number);
@@ -239,11 +239,11 @@ export default function OrganizationSchedule() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4 bg-gray-100 dark:bg-gray-800">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
+        <TabsList className="mb-4 bg-gray-100 dark:bg-gray-800/50">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700/50">
             Vista General
           </TabsTrigger>
-          <TabsTrigger value="detail" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
+          <TabsTrigger value="detail" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700/50">
             Vista Detallada
           </TabsTrigger>
         </TabsList>
@@ -304,10 +304,10 @@ export default function OrganizationSchedule() {
         </TabsContent>
 
         <TabsContent value="detail">
-          <Card className="p-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card className="p-4 bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700/50">
             <div className="mb-4">
               <select 
-                className="w-full max-w-xs px-3 py-2 border rounded-md bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                className="w-full max-w-xs px-3 py-2 border rounded-md bg-white dark:bg-gray-700/50 border-gray-200 dark:border-gray-600/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/30 transition-colors"
                 value={selectedDay || ''}
                 onChange={(e) => setSelectedDay(e.target.value)}
               >
@@ -322,16 +322,16 @@ export default function OrganizationSchedule() {
               <div className="overflow-x-auto">
                 <table className="min-w-full table-auto border-collapse">
                   <thead>
-                    <tr className="bg-gray-50 dark:bg-gray-700/50">
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">Miembro</th>
+                    <tr className="bg-gray-50 dark:bg-gray-700/30">
+                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600/50">Miembro</th>
                       {filteredTimeSlots.map((time) => (
-                        <th key={time} className="px-2 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                        <th key={time} className="px-2 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600/50">
                           {time}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700/50">
                     {members.map((member) => {
                       const timeBlocks = getMemberTimeBlocksForDay(member, selectedDay);
                       return renderMemberRow(member, timeBlocks);
