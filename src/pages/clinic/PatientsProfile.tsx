@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { type PatientHistory, fetchPatientHistory } from "@/services/consultations.services";
 import { generatePatientReport } from "@/utils/generatePatientReport";
+import { useParams, useNavigate } from "react-router-dom";
 import {
     User,
     Phone,
@@ -23,18 +24,21 @@ import {
     Mars,
     X,
     Clock,
-    UserCircle
+    UserCircle,
+    ArrowLeft
 } from "lucide-react";
 
 export default function PatientsProfile() {
+    const { patientId } = useParams();
+    const navigate = useNavigate();
     const [patientHistory, setPatientHistory] = useState<PatientHistory | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedConsultation, setSelectedConsultation] = useState<PatientHistory['consultations'][0] | null>(null);
     const { organization } = useOrganization();
-    const patientId = "cmbo9k4la0005ur3cqqtsd3h3";
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!patientId) return;
             setIsLoading(true);
             try {
                 const history = await fetchPatientHistory(patientId);
@@ -80,7 +84,17 @@ export default function PatientsProfile() {
         <div className="container mx-auto p-6 bg-background min-h-screen">
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-3xl font-bold text-foreground">Historial Médico</h1>
+                    <div className="flex items-center gap-4">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => navigate(-1)}
+                            className="flex items-center gap-2"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Regresar
+                        </Button>
+                        <h1 className="text-3xl font-bold text-foreground">Historial Médico</h1>
+                    </div>
                     <Button 
                         className="bg-primary hover:bg-primary/90"
                         onClick={handleDownloadHistory}

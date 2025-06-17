@@ -80,7 +80,7 @@ export function Router() {
                 <Route path="/dashboard/org/:id/team" element={<TeamOrganization />} />
 
                 <Route path="/dashboard/org/:id/clinic/patients" element={<Patients />} />
-                <Route path="/dashboard/org/:id/clinic/patientsProfile" element={<PatientsProfile />} />
+                <Route path="/dashboard/org/:id/clinic/patient/:patientId/history" element={<PatientsProfile />} />
                 <Route path="/dashboard/org/:id/clinic/consultations" element={<Consultations />} />
                 <Route path="/dashboard/org/:id/clinic/consultations/new" element={<NewConsultation />} />
                 <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnoses />} />
