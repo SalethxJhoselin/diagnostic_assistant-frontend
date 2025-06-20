@@ -4,49 +4,58 @@ import {
     fetchCreateAttentionHour,
     fetchUpdateAttentionHour,
     fetchDeleteAttentionHour,
-    fetchAssignUserToHour,
-    fetchRemoveUserFromHour,
+    fetchUsersByAttentionHour,
+    fetchAssignMultipleUsersToHour,
+    fetchRemoveMultipleUsersFromHour,
     type AttentionHour,
     type CreateAttentionHour
 } from '../../services/attentionHours';
 import { Button as UIButton } from "@/components/ui/button";
 import { Button } from "antd";
 import { useOrganization } from "@/hooks/organizationContex";
-import { EditOutlined, DeleteOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Modal, Form, Select, TimePicker, message } from 'antd';
+import { EditOutlined, DeleteOutlined, UserAddOutlined, UserDeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Form, Select, TimePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { toast } from "sonner";
+import BaseModal from '@/components/ui/BaseModal';
+import { fetchMembersByOrganization, type OrganizationMember } from '@/services/organizations-members';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const { Option } = Select;
 
+// Constantes
+const DAYS = [
+    { label: 'Lunes', value: 'lunes' },
+    { label: 'Martes', value: 'martes' },
+    { label: 'Miércoles', value: 'miercoles' },
+    { label: 'Jueves', value: 'jueves' },
+    { label: 'Viernes', value: 'viernes' },
+    { label: 'Sábado', value: 'sabado' },
+    { label: 'Domingo', value: 'domingo' },
+] as const;
+
 export default function Schedules() {
     const [schedules, setSchedules] = useState<AttentionHour[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState<AttentionHour | null>(null);
+    const [scheduleToDelete, setScheduleToDelete] = useState<string | null>(null);
+    const [isRemoveUser, setIsRemoveUser] = useState(false);
     const [form] = Form.useForm();
     const [assignForm] = Form.useForm();
     const { organization } = useOrganization();
+    const [assignedUsers, setAssignedUsers] = useState<OrganizationMember[]>([]);
+    const [availableUsers, setAvailableUsers] = useState<OrganizationMember[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     if (!organization?.id) {
         return message.error('No se encontró la organización');
     }
-
-
-    const days = [
-        { label: 'Lunes', value: 'lunes' },
-        { label: 'Martes', value: 'martes' },
-        { label: 'Miércoles', value: 'miercoles' },
-        { label: 'Jueves', value: 'jueves' },
-        { label: 'Viernes', value: 'viernes' },
-        { label: 'Sábado', value: 'sabado' },
-        { label: 'Domingo', value: 'domingo' },
-    ];
 
     useEffect(() => {
         loadSchedules();
@@ -54,10 +63,8 @@ export default function Schedules() {
 
     const loadSchedules = async () => {
         try {
-
             const data = await fetchOrganizationAttentionHours(organization.id);
             setSchedules(data);
-            console.log(data);
         } catch (error) {
             message.error('Error al cargar los horarios');
         }
@@ -78,7 +85,50 @@ export default function Schedules() {
             form.resetFields();
             loadSchedules();
         } catch (error) {
-            return message.error('Error al crear el horario');
+            message.error('Error al crear el horario');
+        }
+    };
+
+    const handleRemoveUser = async (values: any) => {
+        if (!selectedSchedule) return;
+
+        try {
+            await fetchRemoveMultipleUsersFromHour({
+                userIds: values.userIds,
+                attentionHourId: selectedSchedule.id
+            });
+            message.success('Usuarios quitados exitosamente');
+            setIsAssignModalVisible(false);
+            assignForm.resetFields();
+            loadSchedules();
+        } catch (error) {
+            message.error('Error al quitar los usuarios');
+        }
+    };
+
+    const openAssignModal = async (schedule: AttentionHour, isRemove = false) => {
+        if (!organization?.id) {
+            message.error('No se encontró la organización');
+            return;
+        }
+
+        setSelectedSchedule(schedule);
+        setIsRemoveUser(isRemove);
+        setIsAssignModalVisible(true);
+        setIsLoading(true);
+
+        try {
+            const [orgUsers, attUsers] = await Promise.all([
+                fetchMembersByOrganization(organization.id),
+                fetchUsersByAttentionHour(schedule.id)
+            ]);
+            setAvailableUsers(orgUsers);
+            setAssignedUsers(attUsers);
+        } catch (error) {
+            message.error('Error al cargar los usuarios');
+            console.error('Error:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -101,10 +151,18 @@ export default function Schedules() {
     };
 
     const handleDelete = async (id: string) => {
+        setScheduleToDelete(id);
+        setIsDeleteModalVisible(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!scheduleToDelete) return;
+        
         try {
-            console.log("id " + id)
-            await fetchDeleteAttentionHour(id);
+            await fetchDeleteAttentionHour(scheduleToDelete);
             message.success('Horario eliminado exitosamente');
+            setIsDeleteModalVisible(false);
+            setScheduleToDelete(null);
             loadSchedules();
         } catch (error) {
             message.error('Error al eliminar el horario');
@@ -115,18 +173,61 @@ export default function Schedules() {
         if (!selectedSchedule) return;
 
         try {
-            await fetchAssignUserToHour({
-                userId: values.userId,
+            await fetchAssignMultipleUsersToHour({
+                userIds: values.userIds,
                 attentionHourId: selectedSchedule.id
             });
-            message.success('Usuario asignado exitosamente');
+            message.success('Usuarios asignados exitosamente');
             setIsAssignModalVisible(false);
             assignForm.resetFields();
             loadSchedules();
         } catch (error) {
-            message.error('Error al asignar el usuario');
+            message.error('Error al asignar los usuarios');
         }
     };
+
+    const renderActionButtons = (schedule: AttentionHour) => (
+        <div className="flex gap-2">
+            <UIButton
+                className="border-primary text-primary hover:bg-primary/10"
+                variant="outline"
+                onClick={() => {
+                    setSelectedSchedule(schedule);
+                    form.setFieldsValue({
+                        days: schedule.days,
+                        timeRange: [
+                            dayjs.utc(schedule.startTime),
+                            dayjs.utc(schedule.endTime)
+                        ]
+                    });
+                    setIsModalVisible(true);
+                }}
+            >
+                <EditOutlined />
+            </UIButton>
+            <UIButton
+                className="border-red-500 text-red-500 hover:bg-red-500/10"
+                variant="outline"
+                onClick={() => handleDelete(schedule.id)}
+            >
+                <DeleteOutlined />
+            </UIButton>
+            <UIButton
+                className="border-primary text-primary hover:bg-primary/10"
+                variant="outline"
+                onClick={() => openAssignModal(schedule, false)}
+            >
+                <UserAddOutlined />
+            </UIButton>
+            <UIButton
+                className="border-red-500 text-red-500 hover:bg-red-500/10"
+                variant="outline"
+                onClick={() => openAssignModal(schedule, true)}
+            >
+                <UserDeleteOutlined />
+            </UIButton>
+        </div>
+    );
 
     return (
         <div className="w-full flex flex-col sm:px-20 px-4 py-10">
@@ -169,42 +270,7 @@ export default function Schedules() {
                                     {dayjs.utc(schedule.endTime).format('HH:mm')}
                                 </td>
                                 <td className="px-4 py-1 border group-hover:border-zinc-400 transition-colors duration-200 animate-fade-in-up">
-                                    <div className="flex gap-2">
-                                        <UIButton
-                                            className="border-primary text-primary hover:bg-primary/10"
-                                            variant="outline"
-                                            onClick={() => {
-                                                setSelectedSchedule(schedule);
-                                                form.setFieldsValue({
-                                                    days: schedule.days,
-                                                    timeRange: [
-                                                        dayjs.utc(schedule.startTime),
-                                                        dayjs.utc(schedule.endTime)
-                                                    ]
-                                                });
-                                                setIsModalVisible(true);
-                                            }}
-                                        >
-                                            <EditOutlined />
-                                        </UIButton>
-                                        <UIButton
-                                            className="border-red-500 text-red-500 hover:bg-red-500/10"
-                                            variant="outline"
-                                            onClick={() => handleDelete(schedule.id)}
-                                        >
-                                            <DeleteOutlined />
-                                        </UIButton>
-                                        <UIButton
-                                            className="border-primary text-primary hover:bg-primary/10"
-                                            variant="outline"
-                                            onClick={() => {
-                                                setSelectedSchedule(schedule);
-                                                setIsAssignModalVisible(true);
-                                            }}
-                                        >
-                                            <UserAddOutlined />
-                                        </UIButton>
-                                    </div>
+                                    {renderActionButtons(schedule)}
                                 </td>
                             </tr>
                         ))}
@@ -212,11 +278,11 @@ export default function Schedules() {
                 </table>
             </div>
 
-            <Modal
+            <BaseModal
+                isOpen={isModalVisible}
+                onClose={() => setIsModalVisible(false)}
                 title={selectedSchedule ? "Editar Horario" : "Crear Horario"}
-                open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                footer={null}
+                size="md"
             >
                 <Form
                     form={form}
@@ -229,7 +295,7 @@ export default function Schedules() {
                         rules={[{ required: true, message: 'Por favor seleccione los días' }]}
                     >
                         <Select mode="multiple" placeholder="Seleccione los días">
-                            {days.map(day => (
+                            {DAYS.map(day => (
                                 <Option key={day.value} value={day.value}>{day.label}</Option>
                             ))}
                         </Select>
@@ -240,7 +306,10 @@ export default function Schedules() {
                         label="Horario"
                         rules={[{ required: true, message: 'Por favor seleccione el horario' }]}
                     >
-                        <TimePicker.RangePicker format="HH:mm" />
+                        <TimePicker.RangePicker
+                            format="HH:mm"
+                            minuteStep={15}
+                        />
                     </Form.Item>
 
                     <Form.Item>
@@ -249,37 +318,96 @@ export default function Schedules() {
                         </Button>
                     </Form.Item>
                 </Form>
-            </Modal>
+            </BaseModal>
 
-            <Modal
-                title="Asignar Usuario"
-                open={isAssignModalVisible}
-                onCancel={() => setIsAssignModalVisible(false)}
-                footer={null}
+            <BaseModal
+                isOpen={isAssignModalVisible}
+                onClose={() => {
+                    setIsAssignModalVisible(false);
+                    setIsRemoveUser(false);
+                    setAssignedUsers([]);
+                    setAvailableUsers([]);
+                }}
+                title={isRemoveUser ? "Quitar Usuarios" : "Asignar Usuarios"}
+                size="md"
             >
                 <Form
                     form={assignForm}
-                    onFinish={handleAssignUser}
+                    onFinish={isRemoveUser ? handleRemoveUser : handleAssignUser}
                     layout="vertical"
                 >
                     <Form.Item
-                        name="userId"
-                        label="Usuario"
-                        rules={[{ required: true, message: 'Por favor seleccione un usuario' }]}
+                        name="userIds"
+                        label="Usuarios"
+                        rules={[{ required: true, message: 'Por favor seleccione al menos un usuario' }]}
                     >
-                        <Select placeholder="Seleccione un usuario">
-                            <Option value="user1">Usuario 1</Option>
-                            <Option value="user2">Usuario 2</Option>
+                        <Select
+                            mode="multiple"
+                            placeholder="Seleccione los usuarios"
+                            loading={isLoading}
+                            style={{ width: '100%' }}
+                        >
+                            {isRemoveUser
+                                ? assignedUsers.map(user => (
+                                    <Option key={user.userId} value={user.userId}>
+                                        {user.user?.email ?? 'No disponible'}
+                                    </Option>
+                                ))
+                                : availableUsers
+                                    .filter(u => !assignedUsers.some(a => a.userId === u.userId))
+                                    .map(user => (
+                                        <Option key={user.userId} value={user.userId}>
+                                            {user.user?.email ?? 'No disponible'}
+                                        </Option>
+                                    ))
+                            }
                         </Select>
                     </Form.Item>
 
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Asignar
+                            {isRemoveUser ? "Quitar Usuarios" : "Asignar Usuarios"}
                         </Button>
                     </Form.Item>
                 </Form>
-            </Modal>
+            </BaseModal>
+
+            <BaseModal
+                isOpen={isDeleteModalVisible}
+                onClose={() => {
+                    setIsDeleteModalVisible(false);
+                    setScheduleToDelete(null);
+                }}
+                title="Confirmar eliminación"
+                size="sm"
+            >
+                <div className="flex flex-col items-center gap-4 py-4">
+                    <ExclamationCircleOutlined className="text-4xl text-red-500" />
+                    <div className="text-center">
+                        <h3 className="text-lg font-semibold mb-2">¿Estás seguro de eliminar este horario?</h3>
+                        <p className="text-gray-500 dark:text-gray-400">
+                            Esta acción no se puede deshacer y eliminará permanentemente el horario seleccionado.
+                        </p>
+                    </div>
+                    <div className="flex gap-3 mt-2">
+                        <UIButton
+                            variant="outline"
+                            onClick={() => {
+                                setIsDeleteModalVisible(false);
+                                setScheduleToDelete(null);
+                            }}
+                        >
+                            Cancelar
+                        </UIButton>
+                        <UIButton
+                            variant="destructive"
+                            onClick={confirmDelete}
+                        >
+                            Sí, eliminar
+                        </UIButton>
+                    </div>
+                </div>
+            </BaseModal>
         </div>
     );
 }

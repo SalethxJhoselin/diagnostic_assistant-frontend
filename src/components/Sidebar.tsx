@@ -2,12 +2,15 @@ import { IconAdmin, IconChatBot, IconDate, IconHome, IconHospital, IconIA, IconU
 import { useOrganization } from "@/hooks/organizationContex";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "./ui/button";
 
 export default function Sidebar() {
   const { organization, openMenu, setOpenMenu } = useOrganization();
   const location = useLocation();
   const [selected, setSelected] = useState("");
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const id = organization?.id;
 
@@ -27,7 +30,6 @@ export default function Sidebar() {
       icon: <IconHospital />,
       children: [
         { name: "Patients", path: `/dashboard/org/${id}/clinic/patients` },
-        { name: "PatientsProfile", path: `/dashboard/org/${id}/clinic/patientsProfile` },
         { name: "Consultations", path: `/dashboard/org/${id}/clinic/consultations` },
         { name: "Diagnoses", path: `/dashboard/org/${id}/clinic/diagnoses` },
         { name: "Treatments", path: `/dashboard/org/${id}/clinic/treatments` },
@@ -39,6 +41,7 @@ export default function Sidebar() {
       children: [
         { name: "Medical Appointments", path: `/dashboard/org/${id}/appointments` },
         { name: "Schedules", path: `/dashboard/org/${id}/attention-hours` },
+        { name: "Organization Schedules", path: `/dashboard/org/${id}/organization-schedules` },
       ],
     },
     {
@@ -68,7 +71,6 @@ export default function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
   const isMobile = window.innerWidth < 640;
 
-
   return (
     <>
       {openMenu && isMobile && (
@@ -80,15 +82,24 @@ export default function Sidebar() {
 
       <aside
         className={`
-          w-[260px] text-[12px] transition-transform duration-300 ease-in-out
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? 'w-[80px]' : 'w-[260px]'}
           ${isMobile
-            ? "fixed  z-20 bg-background p-4 h-full overflow-y-auto"
+            ? "fixed z-20 bg-background p-4 h-full overflow-y-auto"
             : "sticky top-[3.5rem] h-[calc(100vh-3.5rem)] border-r p-4 overflow-y-auto"}
           ${isMobile && !openMenu ? "-translate-x-full" : "translate-x-0"}
         `}
       >
-
-
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hover:bg-secondary"
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+        </div>
 
         {labels.map((label) => {
           const isSelected = selected === label.name;
@@ -104,11 +115,15 @@ export default function Sidebar() {
                   ${isSelected || isOpen ? "bg-secondary font-bold" : "hover:bg-secondary hover:font-bold font-semibold"}`}
                 >
                   {label.icon}
-                  <span>{label.name}</span>
-                  <span className="ml-auto">{isOpen ? "▾" : "▸"}</span>
+                  {!isCollapsed && (
+                    <>
+                      <span>{label.name}</span>
+                      <span className="ml-auto">{isOpen ? "▾" : "▸"}</span>
+                    </>
+                  )}
                 </button>
 
-                {isOpen && (
+                {isOpen && !isCollapsed && (
                   <div className="ml-6 mt-1 space-y-1">
                     {label.children.map((child) => {
                       const active = isActive(child.path);
@@ -139,9 +154,10 @@ export default function Sidebar() {
               onClick={() => setSelected(label.name)}
               className={`flex items-center gap-2 py-2 px-3 my-1 rounded-lg transition-colors 
               ${isActive(label.path || "") ? "bg-secondary font-bold" : "font-semibold hover:bg-secondary hover:font-bold"}`}
+              title={isCollapsed ? label.name : ""}
             >
               {label.icon}
-              <span>{label.name}</span>
+              {!isCollapsed && <span>{label.name}</span>}
             </Link>
           );
         })}

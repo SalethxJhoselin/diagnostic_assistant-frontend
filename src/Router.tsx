@@ -24,6 +24,7 @@ import Plans from "./pages/Plans";
 import Payment from "./pages/Payment";
 import CancerDePiel from "./pages/InfoDelHome/CancerPiel";
 import DermatologiaGeneral from "./pages/InfoDelHome/DermatologiaGeneral";
+import OrganizationSchedule from "./pages/appointments/OrganizationSchedule";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isSignedIn, isLoaded } = useAuth();
@@ -79,7 +80,7 @@ export function Router() {
                 <Route path="/dashboard/org/:id/team" element={<TeamOrganization />} />
 
                 <Route path="/dashboard/org/:id/clinic/patients" element={<Patients />} />
-                <Route path="/dashboard/org/:id/clinic/patientsProfile" element={<PatientsProfile />} />
+                <Route path="/dashboard/org/:id/clinic/patient/:patientId/history" element={<PatientsProfile />} />
                 <Route path="/dashboard/org/:id/clinic/consultations" element={<Consultations />} />
                 <Route path="/dashboard/org/:id/clinic/consultations/new" element={<NewConsultation />} />
                 <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnoses />} />
@@ -87,6 +88,7 @@ export function Router() {
 
                 <Route path="/dashboard/org/:id/appointments" element={<MedicalAppointments />} />
                 <Route path="/dashboard/org/:id/attention-hours" element={<Schedules />} />
+                <Route path="/dashboard/org/:id/organization-schedules" element={<OrganizationSchedule />} />
 
                 <Route path="/dashboard/org/:id/ia-model" element={<IAModel />} />
                 <Route path="/dashboard/org/:id/chat-bot" element={<ChatBot />} />
