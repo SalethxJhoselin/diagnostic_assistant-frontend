@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react"
-import FullCalendar, { EventInput } from "@fullcalendar/react"
+import FullCalendar from "@fullcalendar/react"
+import type { EventInput } from "@fullcalendar/core/index.js"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin from "@fullcalendar/interaction"
@@ -190,27 +191,6 @@ export default function CalendarView({ patients }: CalendarViewProps) {
           </div>
         )}
       </Modal>
-
-      <style jsx global>{`
-        .fc-timegrid-event {
-          min-height: 36px !important;
-          display: flex;
-          align-items: center;
-          font-size: 0.75rem;
-        }
-        .fc-timegrid-slot {
-          height: 40px !important;
-        }
-        @media (max-width: 768px) {
-          .fc .fc-button {
-            padding: 2px 6px !important;
-            font-size: 0.75rem !important;
-          }
-          .fc-toolbar-title {
-            font-size: 1rem !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }

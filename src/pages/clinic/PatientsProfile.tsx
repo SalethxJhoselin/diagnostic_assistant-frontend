@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useOrganization } from "@/hooks/organizationContex";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -10,12 +9,10 @@ import {
     User,
     Phone,
     Mail,
-    MapPin,
     Calendar,
     Heart,
     AlertTriangle,
     Droplet,
-    PhoneCall,
     FileText,
     Stethoscope,
     Pill,
@@ -34,7 +31,6 @@ export default function PatientsProfile() {
     const [patientHistory, setPatientHistory] = useState<PatientHistory | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedConsultation, setSelectedConsultation] = useState<PatientHistory['consultations'][0] | null>(null);
-    const { organization } = useOrganization();
 
     useEffect(() => {
         const fetchData = async () => {

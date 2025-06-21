@@ -14,13 +14,13 @@ import { Button as UIButton } from "@/components/ui/button";
 import { Button } from "antd";
 import { useOrganization } from "@/hooks/organizationContex";
 import { EditOutlined, DeleteOutlined, UserAddOutlined, UserDeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Form, Select, TimePicker, message } from 'antd';
+import { Form, Select, TimePicker } from 'antd';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { toast } from "sonner";
 import BaseModal from '@/components/ui/BaseModal';
 import { fetchMembersByOrganization, type OrganizationMember } from '@/services/organizations-members';
+import { toast } from 'sonner';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -54,7 +54,7 @@ export default function Schedules() {
     const [isLoading, setIsLoading] = useState(false);
 
     if (!organization?.id) {
-        return message.error('No se encontró la organización');
+        return toast.error('No se encontró la organización');
     }
 
     useEffect(() => {
@@ -66,7 +66,7 @@ export default function Schedules() {
             const data = await fetchOrganizationAttentionHours(organization.id);
             setSchedules(data);
         } catch (error) {
-            message.error('Error al cargar los horarios');
+            toast.error('Error al cargar los horarios');
         }
     };
 
@@ -80,12 +80,12 @@ export default function Schedules() {
             };
 
             await fetchCreateAttentionHour(scheduleData);
-            message.success('Horario creado exitosamente');
+            toast.success('Horario creado exitosamente');
             setIsModalVisible(false);
             form.resetFields();
             loadSchedules();
         } catch (error) {
-            message.error('Error al crear el horario');
+            toast.error('Error al crear el horario');
         }
     };
 
@@ -97,18 +97,18 @@ export default function Schedules() {
                 userIds: values.userIds,
                 attentionHourId: selectedSchedule.id
             });
-            message.success('Usuarios quitados exitosamente');
+            toast.success('Usuarios quitados exitosamente');
             setIsAssignModalVisible(false);
             assignForm.resetFields();
             loadSchedules();
         } catch (error) {
-            message.error('Error al quitar los usuarios');
+            toast.error('Error al quitar los usuarios');
         }
     };
 
     const openAssignModal = async (schedule: AttentionHour, isRemove = false) => {
         if (!organization?.id) {
-            message.error('No se encontró la organización');
+            toast.error('No se encontró la organización');
             return;
         }
 
@@ -125,7 +125,7 @@ export default function Schedules() {
             setAvailableUsers(orgUsers);
             setAssignedUsers(attUsers);
         } catch (error) {
-            message.error('Error al cargar los usuarios');
+            toast.error('Error al cargar los usuarios');
             console.error('Error:', error);
         } finally {
             setIsLoading(false);
@@ -141,12 +141,12 @@ export default function Schedules() {
                 startTime: values.timeRange[0].format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
                 endTime: values.timeRange[1].format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
             });
-            message.success('Horario actualizado exitosamente');
+            toast.success('Horario actualizado exitosamente');
             setIsModalVisible(false);
             form.resetFields();
             loadSchedules();
         } catch (error) {
-            message.error('Error al actualizar el horario');
+            toast.error('Error al actualizar el horario');
         }
     };
 
@@ -160,12 +160,12 @@ export default function Schedules() {
         
         try {
             await fetchDeleteAttentionHour(scheduleToDelete);
-            message.success('Horario eliminado exitosamente');
+            toast.success('Horario eliminado exitosamente');
             setIsDeleteModalVisible(false);
             setScheduleToDelete(null);
             loadSchedules();
         } catch (error) {
-            message.error('Error al eliminar el horario');
+            toast.error('Error al eliminar el horario');
         }
     };
 
@@ -177,12 +177,12 @@ export default function Schedules() {
                 userIds: values.userIds,
                 attentionHourId: selectedSchedule.id
             });
-            message.success('Usuarios asignados exitosamente');
+            toast.success('Usuarios asignados exitosamente');
             setIsAssignModalVisible(false);
             assignForm.resetFields();
             loadSchedules();
         } catch (error) {
-            message.error('Error al asignar los usuarios');
+            toast.error('Error al asignar los usuarios');
         }
     };
 
