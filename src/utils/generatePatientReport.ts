@@ -16,7 +16,6 @@ export const generatePatientReport = (patientHistory: PatientHistory) => {
     };
 
     // Encabezado con logo y fondo degradado
-    const gradient = doc.setFillColor(101, 93, 255);
     doc.rect(0, 0, pageWidth, 50, 'F');
     
     // Logo o ícono en el encabezado
@@ -89,7 +88,7 @@ export const generatePatientReport = (patientHistory: PatientHistory) => {
     doc.line(20, yPos + 5, pageWidth - 20, yPos + 5);
     yPos += 15;
 
-    patientHistory.consultations.forEach((consultation, index) => {
+    patientHistory.consultations.forEach((consultation) => {
         if (yPos > pageHeight - 50) {
             doc.addPage();
             yPos = 20;
