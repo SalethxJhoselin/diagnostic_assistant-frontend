@@ -1,14 +1,9 @@
 import { IconBoxes, IconSearch } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
-import {
-    SelectItem, Select, SelectContent, SelectGroup,
-    SelectLabel, SelectTrigger, SelectValue
-} from "@/components/ui/select";
 import { useOrganization } from "@/hooks/organizationContex";
-import type { Organization, Plan } from "@/lib/interfaces";
-import { fetchFindAllPlans, fetchOrganizationsByUser, fetchOrgById, fetchOrgCreate, fetchSubsCreate, fetchOrganizationsMembershipsByUserEmail, type CreateOrg, type CreateSubs } from "@/services/organizations.services";
+import type { Organization } from "@/lib/interfaces";
+import { fetchOrganizationsByUser, fetchOrgById, fetchOrgCreate, fetchSubsCreate, fetchOrganizationsMembershipsByUserEmail, type CreateOrg, type CreateSubs } from "@/services/organizations.services";
 import { useUser } from "@clerk/clerk-react";
-import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,7 +22,6 @@ export default function Organizations() {
     const [filteredOrganizations, setFilteredOrganizations] = useState<Organization[]>();
     const [memberOrganizations, setMemberOrganizations] = useState<OrganizationMembership[]>();
     const [filteredMemberOrganizations, setFilteredMemberOrganizations] = useState<OrganizationMembership[]>();
-    const [plans, setPlans] = useState<Plan[]>();
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     //const [selectedPlan, setSelectedPlan] = useState("");

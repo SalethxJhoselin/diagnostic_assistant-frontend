@@ -141,6 +141,10 @@ export default function MedicalAppointments() {
 
   const handleDelete = async (id: string) => {
     try {
+      if(!organization?.id){
+        toast('organizacion no encontrada')
+        return
+      }
       await fetchDeleteAppointment(id);
       toast.success("Cita eliminada");
       const updated = await fetchAppointmentsByOrg(organization.id);

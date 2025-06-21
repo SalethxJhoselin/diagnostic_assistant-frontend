@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { fetchDiagnosesByOrg, type GetDiagnoses } from "@/services/diagnoses.services";
 import { fetchTreatmentsByOrg, type GetTreatments } from "@/services/treatments.services";
@@ -27,7 +27,6 @@ import {
     Image as ImageIcon,
     History,
     X,
-    Clock,
     AlertCircle,
     CheckCircle2
 } from "lucide-react";
@@ -56,7 +55,6 @@ export default function NewConsultation() {
 
     const { organization, user } = useOrganization();
     const navigate = useNavigate();
-    const location = useLocation();
 
     // Función para guardar el estado en localStorage
     const saveConsultationState = () => {

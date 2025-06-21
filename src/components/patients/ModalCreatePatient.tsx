@@ -81,7 +81,7 @@ export default function ModalCreatePatient({
         aMaternal,
         sexo,
         birthDate: new Date(birthDate).toISOString(),
-        phone: parseInt(phone),
+        phone: phone,
         email,
         ci: parseInt(ci),
         organizationId: organization.id,
