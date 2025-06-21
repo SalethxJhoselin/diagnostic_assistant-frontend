@@ -58,6 +58,9 @@ export interface PatientHistory {
         email: string;
         phone: number;
         birthDate: string;
+        chronicDiseases: string;
+        allergies: string;
+        bloodType: string;
     };
     consultations: Array<{
         id: string;

@@ -132,7 +132,7 @@ export default function Sidebar() {
                           key={child.name}
                           to={child.path}
                           onClick={() => setSelected(label.name)}
-                          className={`block px-3 py-1.5 rounded-md text-[10px] transition-colors ${active
+                          className={`block px-3 py-1.5 rounded-md text-[12px] transition-colors ${active
                             ? "bg-muted font-bold"
                             : "font-semibold hover:bg-secondary hover:font-bold"
                             }`}

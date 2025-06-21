@@ -32,7 +32,6 @@ export default function BaseModal({
   return (
     <div
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
-      onClick={onClose}
     >
       <div
         className={cn(
@@ -41,7 +40,6 @@ export default function BaseModal({
           sizeClasses[size],
           className
         )}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Encabezado */}
         <div className="flex justify-between items-center border-b px-6 py-4">
