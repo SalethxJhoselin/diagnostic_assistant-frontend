@@ -6,10 +6,13 @@ export interface CreatePatient {
   aMaternal: string;
   sexo: string;
   birthDate: string;
-  phone: string;
+  phone: number;
   email: string;
   ci: number;
   organizationId: string;
+  chronicDiseases: string[];
+  allergies: string[];
+  bloodType: string | null;
 }
 
 export interface GetPatient {

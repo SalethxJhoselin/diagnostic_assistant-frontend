@@ -25,7 +25,8 @@ import {
     X,
     Clock,
     UserCircle,
-    ArrowLeft
+    ArrowLeft,
+    Filter
 } from "lucide-react";
 
 export default function PatientsProfile() {
@@ -34,6 +35,9 @@ export default function PatientsProfile() {
     const [patientHistory, setPatientHistory] = useState<PatientHistory | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedConsultation, setSelectedConsultation] = useState<PatientHistory['consultations'][0] | null>(null);
+    const [showDateFilter, setShowDateFilter] = useState(false);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const { organization } = useOrganization();
 
     useEffect(() => {
@@ -42,6 +46,7 @@ export default function PatientsProfile() {
             setIsLoading(true);
             try {
                 const history = await fetchPatientHistory(patientId);
+                console.log("esteeeeeeeeeeeee" + JSON.stringify(history))
                 setPatientHistory(history);
             } catch (error) {
                 console.error("Error fetching patient history:", error);
@@ -57,11 +62,69 @@ export default function PatientsProfile() {
         setSelectedConsultation(null);
     };
 
+    const handleClearFilter = () => {
+        setStartDate('');
+        setEndDate('');
+    };
+
+    const handleToggleDateFilter = () => {
+        setShowDateFilter(!showDateFilter);
+        if (showDateFilter) {
+            handleClearFilter();
+        }
+    };
+
     const handleDownloadHistory = () => {
         if (!patientHistory) return;
+        if (!organization) {
+            toast.error("No se encontró la organización.");
+            return;
+        }
+
+        // Validar fechas si están activas
+        if (showDateFilter && startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (start > end) {
+                toast.error("La fecha de inicio no puede ser mayor que la fecha de fin.");
+                return;
+            }
+        }
+
         try {
-            const doc = generatePatientReport(patientHistory);
-            doc.save(`historial_medico_${patientHistory.patient.name}_${patientHistory.patient.aPaternal}.pdf`);
+            // Filtrar consultas por fecha si el filtro está activo
+            let filteredHistory = patientHistory;
+            if (showDateFilter && startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999); // Incluir todo el día de fin
+                
+                const filteredConsultations = patientHistory.consultations.filter(consultation => {
+                    const consultationDate = new Date(consultation.consultationDate);
+                    return consultationDate >= start && consultationDate <= end;
+                });
+
+                if (filteredConsultations.length === 0) {
+                    toast.error("No hay consultas en el rango de fechas seleccionado.");
+                    return;
+                }
+
+                filteredHistory = {
+                    ...patientHistory,
+                    consultations: filteredConsultations
+                };
+            }
+
+            const doc = generatePatientReport(
+                filteredHistory, 
+                organization, 
+                showDateFilter && startDate && endDate ? { startDate, endDate } : undefined
+            );
+            const fileName = showDateFilter && startDate && endDate 
+                ? `historial_medico_${patientHistory.patient.name}_${patientHistory.patient.aPaternal}_${startDate}_${endDate}.pdf`
+                : `historial_medico_${patientHistory.patient.name}_${patientHistory.patient.aPaternal}.pdf`;
+            
+            doc.save(fileName);
             toast.success("Historial médico descargado correctamente");
         } catch (error) {
             console.error("Error generating PDF:", error);
@@ -85,8 +148,8 @@ export default function PatientsProfile() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             onClick={() => navigate(-1)}
                             className="flex items-center gap-2"
                         >
@@ -95,13 +158,82 @@ export default function PatientsProfile() {
                         </Button>
                         <h1 className="text-3xl font-bold text-foreground">Historial Médico</h1>
                     </div>
-                    <Button 
-                        className="bg-primary hover:bg-primary/90"
-                        onClick={handleDownloadHistory}
-                    >
-                        <FileText className="w-4 h-4 mr-2" />
-                        Descargar Historial
-                    </Button>
+                    <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
+                        {/* Filtro de fecha */}
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={handleToggleDateFilter}
+                                className="flex items-center gap-2"
+                            >
+                                <Filter className="w-4 h-4" />
+                                Filtro de Fecha
+                            </Button>
+                        </div>
+                        
+                        {/* Panel de filtro de fecha */}
+                        {showDateFilter && (
+                            <Card className="p-4 bg-card border border-border w-full sm:w-auto">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-sm font-medium text-foreground">Desde:</label>
+                                        <input
+                                            type="date"
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                            className="px-3 py-1 text-sm border border-border rounded-md bg-background text-foreground"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-sm font-medium text-foreground">Hasta:</label>
+                                        <input
+                                            type="date"
+                                            value={endDate}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                            className="px-3 py-1 text-sm border border-border rounded-md bg-background text-foreground"
+                                        />
+                                    </div>
+                                    <div className="flex items-end">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleClearFilter}
+                                            className="text-xs"
+                                        >
+                                            Limpiar
+                                        </Button>
+                                    </div>
+                                </div>
+                                {showDateFilter && startDate && endDate && (
+                                    <p className="text-xs text-muted-foreground mt-2">
+                                        Se descargará el historial desde {startDate} hasta {endDate}
+                                    </p>
+                                )}
+                                {showDateFilter && startDate && endDate && (
+                                    <p className="text-xs text-primary mt-1">
+                                        {(() => {
+                                            const start = new Date(startDate);
+                                            const end = new Date(endDate);
+                                            end.setHours(23, 59, 59, 999);
+                                            const count = patientHistory.consultations.filter(consultation => {
+                                                const consultationDate = new Date(consultation.consultationDate);
+                                                return consultationDate >= start && consultationDate <= end;
+                                            }).length;
+                                            return `${count} consulta${count !== 1 ? 's' : ''} en el rango seleccionado`;
+                                        })()}
+                                    </p>
+                                )}
+                            </Card>
+                        )}
+                        
+                        <Button
+                            className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                            onClick={handleDownloadHistory}
+                        >   
+                            <FileText className="w-4 h-4 mr-2" />
+                            {showDateFilter && startDate && endDate ? 'Descargar Filtrado' : 'Descargar Historial'}
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Tarjetas de información del paciente */}
@@ -180,21 +312,75 @@ export default function PatientsProfile() {
                                     <Stethoscope className="w-5 h-5 text-red-500 mr-2" />
                                     <h3 className="font-medium text-foreground">Enfermedades Crónicas</h3>
                                 </div>
-                                <p className="text-muted-foreground ml-7">No hay enfermedades crónicas registradas</p>
+
+                                {Array.isArray(patientHistory.patient.chronicDiseases)
+                                    ? patientHistory.patient.chronicDiseases.length > 0
+                                        ? (
+                                            <div className="ml-7">
+                                                {patientHistory.patient.chronicDiseases.map((disease, index) => (
+                                                    <span key={index} className="font-medium text-foreground block">
+                                                        • {disease}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )
+                                        : (
+                                            <p className="text-muted-foreground ml-7">No hay enfermedades crónicas registradas</p>
+                                        )
+                                    : patientHistory.patient.chronicDiseases
+                                        ? (
+                                            <div className="ml-7">
+                                                <span className="font-medium text-foreground block">
+                                                    • {patientHistory.patient.chronicDiseases}
+                                                </span>
+                                            </div>
+                                        )
+                                        : (
+                                            <p className="text-muted-foreground ml-7">No hay enfermedades crónicas registradas</p>
+                                        )
+                                }
                             </div>
                             <div className="p-4 bg-card rounded-lg hover:bg-accent transition-colors">
                                 <div className="flex items-center mb-2">
                                     <AlertTriangle className="w-5 h-5 text-yellow-500 mr-2" />
                                     <h3 className="font-medium text-foreground">Alergias</h3>
                                 </div>
-                                <p className="text-muted-foreground ml-7">No hay alergias registradas</p>
+                                {Array.isArray(patientHistory.patient.allergies)
+                                    ? patientHistory.patient.chronicDiseases.length > 0
+                                        ? (
+                                            <div className="ml-7">
+                                                {patientHistory.patient.allergies.map((disease, index) => (
+                                                    <span key={index} className="font-medium text-foreground block">
+                                                        • {disease}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )
+                                        : (
+                                            <p className="text-muted-foreground ml-7">No hay alergias registradas</p>
+                                        )
+                                    : patientHistory.patient.allergies
+                                        ? (
+                                            <div className="ml-7">
+                                                <span className="font-medium text-foreground block">
+                                                    • {patientHistory.patient.allergies}
+                                                </span>
+                                            </div>
+                                        )
+                                        : (
+                                            <p className="text-muted-foreground ml-7">No hay alergias registradas</p>
+                                        )
+                                }
                             </div>
                             <div className="p-4 bg-card rounded-lg hover:bg-accent transition-colors">
                                 <div className="flex items-center mb-2">
                                     <Droplet className="w-5 h-5 text-blue-500 mr-2" />
                                     <h3 className="font-medium text-foreground">Tipo de Sangre</h3>
                                 </div>
-                                <p className="text-muted-foreground ml-7">No registrado</p>
+                                {patientHistory.patient.bloodType
+                                    ? <span className="font-medium ml-7 text-foreground">• {patientHistory.patient.bloodType}</span>
+                                    : <p className="text-muted-foreground ml-7">No registrado</p>
+                                }
                             </div>
                         </div>
                     </Card>
@@ -228,8 +414,8 @@ export default function PatientsProfile() {
                                                 Doctor: {consultation.user.email}
                                             </p>
                                         </div>
-                                        <Button 
-                                            variant="outline" 
+                                        <Button
+                                            variant="outline"
                                             className="text-primary border-primary hover:bg-primary/10"
                                             onClick={() => setSelectedConsultation(consultation)}
                                         >
