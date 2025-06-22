@@ -23,7 +23,7 @@ export default function Home() {
       duration: 2,
       repeat: Infinity,
       repeatType: "loop" as const,
-      ease: "easeInOut",
+      ease: [0.25, 0.1, 0.25, 1],
     },
   };
   return (

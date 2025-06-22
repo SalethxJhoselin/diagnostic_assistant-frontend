@@ -7,7 +7,7 @@ export default function AppMovil() {
       duration: 1,
       repeat: Infinity,
       repeatType: "loop" as const,
-      ease: "easeInOut",
+      ease: [0.25, 0.1, 0.25, 1],
     },
   };
 
