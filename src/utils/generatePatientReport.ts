@@ -127,7 +127,7 @@ export const generatePatientReport = (patientHistory: PatientHistory, organizati
     doc.line(margen, y, pageWidth - margen, y);
     y += 4;
 
-    patientHistory.consultations.forEach((consulta, idx) => {
+    patientHistory.consultations.forEach((consulta) => {
         if (y > pageHeight - 60) {
             doc.addPage();
             drawHeaderFondo();

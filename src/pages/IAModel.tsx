@@ -216,7 +216,7 @@ export default function IAModel() {
 
       // Recorrer cada sección para asignar el texto correspondiente a cada propiedad
       let currentSection: keyof DiseaseDetails | null = null;
-      sectionsArray.forEach((section, index) => {
+      sectionsArray.forEach((section) => {
         // Buscar si la sección corresponde a un encabezado
         for (const key of Object.keys(sections) as (keyof typeof sections)[]) {
           if (section.includes(sections[key])) {
