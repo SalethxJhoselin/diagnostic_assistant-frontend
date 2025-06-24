@@ -7,7 +7,7 @@ import ServiciosDestacados from "@/components/home/Servicios";
 import TextoMotivacional from "@/components/home/textoMotivacional";
 import ServiciosPrincipales from "@/components/home/serviciosEspeciales";
 import AboutUs from "@/components/home/aboutUs";
-import { motion } from "framer-motion";
+import { cubicBezier, motion } from "framer-motion";
 import AppMovil from "@/components/home/InfoAppMovil";
 
 export default function Home() {
@@ -23,7 +23,7 @@ export default function Home() {
       duration: 2,
       repeat: Infinity,
       repeatType: "loop" as const,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: cubicBezier(0.42, 0, 0.58, 1) ,
     },
   };
   return (
