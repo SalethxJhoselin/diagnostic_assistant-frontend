@@ -33,6 +33,7 @@ export default function Sidebar() {
         { name: "Consultations", path: `/dashboard/org/${id}/clinic/consultations` },
         { name: "Diagnoses", path: `/dashboard/org/${id}/clinic/diagnoses` },
         { name: "Treatments", path: `/dashboard/org/${id}/clinic/treatments` },
+        { name: "Medical Report", path: `/dashboard/org/${id}/clinic/medicalList` },
       ],
     },
     {
