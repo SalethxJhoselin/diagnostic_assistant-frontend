@@ -25,6 +25,7 @@ import Payment from "./pages/Payment";
 import CancerDePiel from "./pages/InfoDelHome/CancerPiel";
 import DermatologiaGeneral from "./pages/InfoDelHome/DermatologiaGeneral";
 import OrganizationSchedule from "./pages/appointments/OrganizationSchedule";
+import MedicalReportList from "./pages/clinic/MedicalReportList";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isSignedIn, isLoaded } = useAuth();
@@ -85,6 +86,7 @@ export function Router() {
                 <Route path="/dashboard/org/:id/clinic/consultations/new" element={<NewConsultation />} />
                 <Route path="/dashboard/org/:id/clinic/diagnoses" element={<Diagnoses />} />
                 <Route path="/dashboard/org/:id/clinic/treatments" element={<Treatments />} />
+                <Route path="/dashboard/org/:id/clinic/medicalList" element={<MedicalReportList />} />
 
                 <Route path="/dashboard/org/:id/appointments" element={<MedicalAppointments />} />
                 <Route path="/dashboard/org/:id/attention-hours" element={<Schedules />} />
