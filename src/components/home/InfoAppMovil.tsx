@@ -33,7 +33,7 @@ export default function AppMovil() {
             Gestiona tus consultas, recibe recordatorios y accede a tus diagnósticos médicos dondequiera que estés. Fácil, rápida y segura.
           </p>
           <motion.a
-            href="https://play.google.com/store/apps/details?id=com.aidermatologist&hl=es-MX&pli=1"
+            href="https://drive.google.com/drive/folders/1wzUpxJJTKMwVEVYGRhzm9nCmHV7zNt3s?usp=drive_link"
             className="inline-block bg-indigo-600 text-white px-10 py-5 rounded-full hover:bg-indigo-700 shadow-lg transition text-2xl font-bold cursor-pointer select-none"
             animate={buttonAnimation}
             whileHover={{ scale: 1.1 }}
