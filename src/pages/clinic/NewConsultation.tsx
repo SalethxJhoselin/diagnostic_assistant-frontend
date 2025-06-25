@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/hooks/organizationContex";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { fetchDiagnosesByOrg, type GetDiagnoses } from "@/services/diagnoses.services";
 import { fetchTreatmentsByOrg, type GetTreatments } from "@/services/treatments.services";
@@ -55,6 +55,7 @@ export default function NewConsultation() {
 
     const { organization, user } = useOrganization();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Función para guardar el estado en localStorage
     const saveConsultationState = () => {
@@ -149,6 +150,15 @@ export default function NewConsultation() {
         };
         fetchAppointments();
     }, [selectedPatientId]);
+
+    useEffect(() => {
+        // Si viene desde 'Iniciar Consulta', precargar paciente y cita
+        if (location.state) {
+            const { patientId, appointmentId } = location.state as { patientId?: string; appointmentId?: string };
+            if (patientId) setSelectedPatientId(patientId);
+            if (appointmentId) setSelectedAppointmentId(appointmentId);
+        }
+    }, [location.state]);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

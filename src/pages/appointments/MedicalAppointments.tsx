@@ -8,6 +8,7 @@ import DatePickerCustom from "@/components/appointments/DatePickerCustom";
 import TimePickerCustom from "@/components/appointments/TimePickerCustom";
 import CalendarView from "@/components/appointments/CalendarView";
 import BaseModal from "@/components/ui/BaseModal";
+import { useNavigate } from "react-router-dom";
 
 import {
   fetchAppointmentsByOrg,
@@ -34,7 +35,11 @@ export default function MedicalAppointments() {
     startTime: "",
     endTime: "",
     patientId: "",
+    estado: "pendiente",
   });
+  const estadosCita = ["pendiente", "confirmada", "cancelada", "finalizada"];
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!organization?.id) return;
@@ -70,6 +75,7 @@ export default function MedicalAppointments() {
       startTime: "",
       endTime: "",
       patientId: "",
+      estado: "pendiente",
     });
     setEditingId(null);
   };
@@ -79,7 +85,8 @@ export default function MedicalAppointments() {
       formData.date &&
       formData.startTime &&
       formData.endTime &&
-      formData.patientId
+      formData.patientId &&
+      formData.estado
     );
   };
 
@@ -114,12 +121,13 @@ export default function MedicalAppointments() {
     }
     if (!validateLogic()) return;
 
-    const payload: CreateAppointmentDto = {
+    const payload: any = {
       date: formData.date,
       startTime: new Date(`${formData.date}T${formData.startTime}:00`),
       endTime: new Date(`${formData.date}T${formData.endTime}:00`),
       patientId: formData.patientId,
       organizationId: organization.id,
+      estado: formData.estado,
     };
 
     try {
@@ -206,6 +214,21 @@ export default function MedicalAppointments() {
               ))}
             </select>
           </div>
+          {editingId && (
+            <div>
+              <Label>Estado</Label>
+              <select
+                name="estado"
+                value={formData.estado}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2 bg-background text-foreground"
+              >
+                {estadosCita.map((estado) => (
+                  <option key={estado} value={estado}>{estado.charAt(0).toUpperCase() + estado.slice(1)}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="flex items-end gap-2">
             <Button onClick={handleSubmit} disabled={!isFormValid()}>
               {editingId ? "Actualizar Cita" : "Registrar Cita"}
@@ -251,17 +274,18 @@ export default function MedicalAppointments() {
               <th className="px-4 py-2 border-r">Paciente</th>
               <th className="px-4 py-2 border-r">Fecha</th>
               <th className="px-4 py-2 border-r">Hora</th>
+              <th className="px-4 py-2 border-r">Estado</th>
               <th className="px-4 py-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={4} className="text-center py-6">Cargando citas...</td>
+                <td colSpan={5} className="text-center py-6">Cargando citas...</td>
               </tr>
             ) : appointments.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-6">No hay citas registradas</td>
+                <td colSpan={5} className="text-center py-6">No hay citas registradas</td>
               </tr>
             ) : (
               appointments.map((appt) => (
@@ -281,6 +305,7 @@ export default function MedicalAppointments() {
                       minute: "2-digit",
                     })}
                   </td>
+                  <td className="px-4 py-2 border">{appt.estado ? appt.estado.charAt(0).toUpperCase() + appt.estado.slice(1) : "-"}</td>
                   <td className="px-4 py-2 border flex flex-wrap gap-2">
                     <Button size="sm" variant="outline" onClick={() => {
                       setFormData({
@@ -288,6 +313,7 @@ export default function MedicalAppointments() {
                         startTime: new Date(appt.startTime).toTimeString().slice(0, 5),
                         endTime: new Date(appt.endTime).toTimeString().slice(0, 5),
                         patientId: appt.patient?.id ?? "",
+                        estado: appt.estado ?? "pendiente",
                       });
                       setEditingId(appt.id);
                     }}>
@@ -297,11 +323,26 @@ export default function MedicalAppointments() {
                       <Trash2 size={14} /> Eliminar
                     </Button>
                     <Button
-                    size="sm"
-                    variant="secondary"
-                    className="border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-purple-100 dark:bg-gray-900 hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors duration-200"
-                   onClick={() => setViewingPatient(appt.patient)}>
+                      size="sm"
+                      variant="secondary"
+                      className="border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-purple-100 dark:bg-gray-900 hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors duration-200"
+                      onClick={() => setViewingPatient(appt.patient)}>
                       Ver Paciente
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      onClick={() => {
+                        navigate(`/dashboard/org/${organization?.id}/clinic/consultations/new`, {
+                          state: {
+                            patientId: appt.patient?.id,
+                            appointmentId: appt.id
+                          }
+                        });
+                      }}
+                    >
+                      Iniciar Consulta
                     </Button>
                   </td>
                 </tr>

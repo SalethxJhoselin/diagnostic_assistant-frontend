@@ -1,13 +1,18 @@
 import { apilocal } from "./api";
 
 export interface Appointment {
+  id: string;
   date: string;
   startTime: Date;
   endTime: Date;    
   patient: {
+    id?: string;
     name: string;
+    aPaternal?: string;
+    aMaternal?: string;
   };
   organizationId: string;
+  estado: string;
 }
 
 export interface CreateAppointmentDto {
